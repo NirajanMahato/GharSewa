@@ -1,0 +1,62 @@
+import { colors, fonts } from "@/constants/theme"; // Import fonts
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputProps,
+  View,
+} from "react-native";
+
+interface InputFieldProps extends TextInputProps {
+  label?: string;
+}
+
+const InputField: React.FC<InputFieldProps> = ({ label, ...rest }) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <View style={styles.container}>
+      {label && <Text style={styles.label}>{label}</Text>}
+      <TextInput
+        style={[
+          styles.input,
+          isFocused && styles.inputFocused, // Dynamic style
+        ]}
+        placeholderTextColor={colors.textSecondary}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        {...rest}
+      />
+    </View>
+  );
+};
+
+export default InputField;
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 20,
+  },
+  label: {
+    marginBottom: 6,
+    fontSize: 14,
+    color: colors.textPrimary,
+    fontFamily: fonts.medium, // Lighter font for label
+  },
+  input: {
+    height: 58,
+    borderWidth: 1,
+    borderColor: colors.neutral300, // Light border initially
+    borderRadius: 12, // Softer rounded corners
+    paddingHorizontal: 16,
+    backgroundColor: colors.white,
+    fontSize: 16,
+    color: colors.textPrimary,
+    fontFamily: fonts.regular,
+  },
+  inputFocused: {
+    borderColor: colors.primary, // Highlight border on focus
+    shadowOpacity: 0.2, // Slightly more shadow when focused
+  },
+});
