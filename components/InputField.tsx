@@ -36,16 +36,16 @@ export default InputField;
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 20,
+    marginTop: 20,
   },
   label: {
     marginBottom: 6,
-    fontSize: 14,
+    fontSize: 16,
     color: colors.textPrimary,
     fontFamily: fonts.medium, // Lighter font for label
   },
   input: {
-    height: 58,
+    height: 57,
     borderWidth: 1,
     borderColor: colors.neutral300, // Light border initially
     borderRadius: 12, // Softer rounded corners

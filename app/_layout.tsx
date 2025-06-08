@@ -1,8 +1,9 @@
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen"; // important to avoid blank screen
+import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
+import Toast from "react-native-toast-message"; // ✅ Add this
 
 // Keep splash screen visible while fonts are loading
 SplashScreen.preventAutoHideAsync();
@@ -18,15 +19,20 @@ const _layout = () => {
 
   useEffect(() => {
     if (fontsLoaded) {
-      SplashScreen.hideAsync(); // Hide splash screen when fonts are ready
+      SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
 
   if (!fontsLoaded) {
-    return null; // Stay on splash screen while fonts load
+    return null;
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <View style={{ flex: 1 }}>
+      <Stack screenOptions={{ headerShown: false }} />
+      <Toast /> {/* ✅ Add this to globally show toasts */}
+    </View>
+  );
 };
 
 export default _layout;

@@ -1,6 +1,7 @@
 import { colors, fonts } from "@/constants/theme";
 import React from "react";
 import {
+  ActivityIndicator,
   DimensionValue,
   StyleSheet,
   Text,
@@ -12,8 +13,9 @@ interface PrimaryButtonProps extends TouchableOpacityProps {
   title: string;
   onPress: () => void;
   marginTop?: number;
-  width?: DimensionValue; // <-- Proper type for width
-  height?: DimensionValue; // <-- Proper type for height
+  width?: DimensionValue;
+  height?: DimensionValue;
+  loading?: boolean;
 }
 
 const PrimaryButton: React.FC<PrimaryButtonProps> = ({
@@ -22,15 +24,21 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   marginTop = 16,
   width = "100%",
   height = 56,
+  loading = false,
   ...props
 }) => {
   return (
     <TouchableOpacity
       style={[styles.button, { marginTop, width, height }]}
       onPress={onPress}
+      disabled={loading}
       {...props}
     >
-      <Text style={styles.buttonText}>{title}</Text>
+      {loading ? (
+        <ActivityIndicator size="large" color={colors.white} />
+      ) : (
+        <Text style={styles.buttonText}>{title}</Text>
+      )}
     </TouchableOpacity>
   );
 };
@@ -48,6 +56,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 6,
     elevation: 5,
+    flexDirection: "row",
   },
   buttonText: {
     color: colors.white,

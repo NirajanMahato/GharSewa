@@ -1,23 +1,50 @@
+// app/(auth)/registerStepTwo.tsx
 import BackButton from "@/components/BackButton";
 import PrimaryButton from "@/components/PrimaryButton";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Typo from "@/components/Typo";
 import { colors, fonts } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import axios from "axios";
+import Constants from "expo-constants";
+import * as Location from "expo-location";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
 const RegisterStepTwo = () => {
   const router = useRouter();
+  const { userId } = useLocalSearchParams<{ userId: string }>();
 
-  const handleAllowLocation = () => {
-    console.log("Requesting location permission...");
-    // Here you would request actual location permission
-    router.push("/(home)/dashboard"); // Example after success
+  const handleAllowLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        alert("Permission to access location was denied");
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = location.coords;
+
+      console.log("Location:", latitude, longitude);
+
+      const baseURL = Constants.expoConfig?.extra?.API_BASE_URL;
+      await axios.post(`${baseURL}/api/user/location`, {
+        userId,
+        latitude,
+        longitude,
+      });
+
+      router.push("/(tabs)"); // Navigate to home/tabs after saving
+    } catch (error) {
+      console.error("Location error:", error);
+      alert("Failed to get location.");
+    }
   };
 
   const handleNotNow = () => {
-    router.push("/(home)/dashboard"); // Skip to dashboard
+    router.push("/(tabs)"); // Skip to dashboard
   };
 
   return (
@@ -103,8 +130,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: "white",
     justifyContent: "flex-start",
-    paddingTop:130
-    
+    paddingTop: 130,
   },
   imageContainer: {
     alignItems: "center",

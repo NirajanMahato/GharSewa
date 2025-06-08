@@ -1,3 +1,4 @@
+// app/(auth)/login.tsx
 import InputField from "@/components/InputField";
 import PrimaryButton from "@/components/PrimaryButton";
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -10,10 +11,13 @@ import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 const Login = () => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = () => {
-    console.log(mobileNumber, password);
+    setIsLoading(true);
+    console.log(mobileNumber, password, "login");
+    setIsLoading(false);
   };
 
   const handleRegister = () => {
@@ -53,8 +57,9 @@ const Login = () => {
         </TouchableOpacity>
 
         <PrimaryButton
-          title="Next"
+          title="Login"
           onPress={handleLogin}
+          loading={isLoading}
           marginTop={50}
           width={"100%"}
           height={60}

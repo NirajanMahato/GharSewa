@@ -1,12 +1,5 @@
-import { Href } from "expo-router";
-import { Firestore, Timestamp } from "firebase/firestore";
-import { Icon } from "phosphor-react-native";
 import React, { ReactNode } from "react";
 import {
-  ActivityIndicator,
-  ActivityIndicatorProps,
-  ImageStyle,
-  PressableProps,
   TextInput,
   TextInputProps,
   TextProps,
@@ -15,20 +8,17 @@ import {
   ViewStyle,
 } from "react-native";
 
+// -------------------- UI Props --------------------
+
 export type ScreenWrapperProps = {
   style?: ViewStyle;
   children: React.ReactNode;
 };
+
 export type ModalWrapperProps = {
   style?: ViewStyle;
   children: React.ReactNode;
   bg?: string;
-};
-export type accountOptionType = {
-  title: string;
-  icon: React.ReactNode;
-  bgColor: string;
-  routeName?: any;
 };
 
 export type TypoProps = {
@@ -68,48 +58,11 @@ export type BackButtonProps = {
   iconSize?: number;
 };
 
-export type TransactionType = {
-  id?: string;
-  type: string;
-  amount: number;
-  category?: string;
-  date: Date | Timestamp | string;
-  description?: string;
-  image?: any;
-  uid?: string;
-  walletId: string;
-};
-
-export type CategoryType = {
-  label: string;
-  value: string;
-  icon: Icon;
-  bgColor: string;
-};
-export type ExpenseCategoriesType = {
-  [key: string]: CategoryType;
-};
-
-export type TransactionListType = {
-  data: TransactionType[];
-  title?: string;
-  loading?: boolean;
-  emptyListMessage?: string;
-};
-
-export type TransactionItemProps = {
-  item: TransactionType;
-  index: number;
-  handleClick: Function;
-};
-
 export interface InputProps extends TextInputProps {
   icon?: React.ReactNode;
   containerStyle?: ViewStyle;
   inputStyle?: TextStyle;
   inputRef?: React.RefObject<TextInput>;
-  //   label?: string;
-  //   error?: string;
 }
 
 export interface CustomButtonProps extends TouchableOpacityProps {
@@ -128,46 +81,74 @@ export type ImageUploadProps = {
   placeholder?: string;
 };
 
-export type UserType = {
-  uid?: string;
-  email?: string | null;
-  name: string | null;
-  image?: any;
-} | null;
-
-export type UserDataType = {
-  name: string;
-  image?: any;
+export type accountOptionType = {
+  title: string;
+  icon: React.ReactNode;
+  bgColor: string;
+  routeName?: any;
 };
 
+// -------------------- Backend Types --------------------
+
+// Auth token + minimal info
+export type AuthUser = {
+  id: string;
+  role: "customer" | "technician" | "admin";
+  token: string;
+  fullName: string;
+  email: string;
+  profilePicture?: string;
+};
+
+// Full user profile for display or context
+export type UserProfile = {
+  _id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  role: "customer" | "technician" | "admin";
+  address?: string;
+  profilePicture?: string;
+  location?: {
+    type: "Point";
+    coordinates: [number, number]; // [lng, lat]
+  };
+  skills?: string[];
+  experience?: number;
+  verified?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+// Auth context for React
 export type AuthContextType = {
-  user: UserType;
-  setUser: Function;
-  login: (
-    email: string,
-    password: string
-  ) => Promise<{ success: boolean; msg?: string }>;
-  register: (
-    email: string,
-    password: string,
-    name: string
-  ) => Promise<{ success: boolean; msg?: string }>;
-  updateUserData: (userId: string) => Promise<void>;
+  user: AuthUser | null;
+  setUser: (user: AuthUser | null) => void;
+  login: (user: AuthUser) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
+
+// Service model type (from backend)
+export type ServiceType = {
+  _id: string;
+  customer: string | UserProfile;
+  technician: string | UserProfile;
+  serviceType: string;
+  description?: string;
+  status: "pending" | "accepted" | "in_progress" | "completed" | "cancelled";
+  scheduledDate?: Date;
+  completedDate?: Date;
+  price: number;
+  customerRating?: number;
+  customerReview?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+// Response wrapper
 export type ResponseType = {
   success: boolean;
   data?: any;
   msg?: string;
-};
-
-export type WalletType = {
-  id?: string;
-  name: string;
-  amount?: number;
-  totalIncome?: number;
-  totalExpenses?: number;
-  image: any;
-  uid?: string;
-  created?: Date;
 };
