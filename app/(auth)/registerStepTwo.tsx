@@ -36,7 +36,7 @@ const RegisterStepTwo = () => {
         longitude,
       });
 
-      router.push("/(tabs)"); // Navigate to home/tabs after saving
+      router.replace("/(auth)/login"); // Navigate to home/tabs after saving
     } catch (error) {
       console.error("Location error:", error);
       alert("Failed to get location.");
@@ -44,7 +44,7 @@ const RegisterStepTwo = () => {
   };
 
   const handleNotNow = () => {
-    router.push("/(tabs)"); // Skip to dashboard
+    router.replace("/(auth)/login");
   };
 
   return (

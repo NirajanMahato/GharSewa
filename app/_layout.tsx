@@ -1,14 +1,13 @@
+// app/_layout.tsx
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
-import { StyleSheet, View } from "react-native";
-import Toast from "react-native-toast-message"; // ✅ Add this
+import Toast from "react-native-toast-message";
 
-// Keep splash screen visible while fonts are loading
 SplashScreen.preventAutoHideAsync();
 
-const _layout = () => {
+const RootLayout = () => {
   const [fontsLoaded] = useFonts({
     "Poppins-Regular": require("@/assets/fonts/Poppins-Regular.ttf"),
     "Poppins-Light": require("@/assets/fonts/Poppins-Light.ttf"),
@@ -18,23 +17,17 @@ const _layout = () => {
   });
 
   useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
+    if (fontsLoaded) SplashScreen.hideAsync();
   }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
-    return null;
-  }
+  if (!fontsLoaded) return null;
 
   return (
-    <View style={{ flex: 1 }}>
+    <>
       <Stack screenOptions={{ headerShown: false }} />
-      <Toast /> {/* ✅ Add this to globally show toasts */}
-    </View>
+      <Toast />
+    </>
   );
 };
 
-export default _layout;
-
-const styles = StyleSheet.create({});
+export default RootLayout;

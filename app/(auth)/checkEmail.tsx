@@ -17,8 +17,9 @@ const CheckEmail = () => {
   };
 
   const handleBackToLogin = () => {
-    router.replace("/(auth)/login");
+    router.back();
   };
+  
   return (
     <ScreenWrapper>
       <View style={styles.container}>

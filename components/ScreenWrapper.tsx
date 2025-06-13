@@ -1,6 +1,5 @@
 import { colors } from "@/constants/theme";
 import { ScreenWrapperProps } from "@/types";
-import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { Dimensions, Platform, StyleSheet, View } from "react-native";
 
@@ -11,7 +10,6 @@ const ScreenWrapper = ({ style, children }: ScreenWrapperProps) => {
 
   return (
     <View style={[styles.wrapper, { paddingTop }, style]}>
-      <StatusBar style="dark" backgroundColor="#ffffff"></StatusBar>
       {children}
     </View>
   );

@@ -4,21 +4,38 @@ import PrimaryButton from "@/components/PrimaryButton";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Typo from "@/components/Typo";
 import { colors, fonts } from "@/constants/theme";
+import { useLogin } from "@/hooks/useLogin";
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import Toast from "react-native-toast-message";
 
 const Login = () => {
-  const [mobileNumber, setMobileNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { loginUser, loading: isLoading } = useLogin();
   const router = useRouter();
 
-  const handleLogin = () => {
-    setIsLoading(true);
-    console.log(mobileNumber, password, "login");
-    setIsLoading(false);
+  const handleLogin = async () => {
+    try {
+      await loginUser({ email, password });
+    } catch (err: any) {
+      Toast.show({
+        type: "error",
+        text1: "Login Failed",
+        text2: err.message,
+      });
+    }
   };
+  
+
+  useFocusEffect(
+    useCallback(() => {
+      setEmail("");
+      setPassword("");
+    }, [])
+  );
 
   const handleRegister = () => {
     router.push("/(auth)/register");
@@ -35,11 +52,11 @@ const Login = () => {
         <Typo style={styles.title}>Login via phone number</Typo>
 
         <InputField
-          label="Mobile Number"
-          placeholder="Enter mobile number"
-          keyboardType="phone-pad"
-          value={mobileNumber}
-          onChangeText={setMobileNumber}
+          label="Email"
+          placeholder="Enter your email"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
         />
         <InputField
           label="Password"
@@ -60,7 +77,7 @@ const Login = () => {
           title="Login"
           onPress={handleLogin}
           loading={isLoading}
-          marginTop={50}
+          marginTop={40}
           width={"100%"}
           height={60}
         />
@@ -81,7 +98,7 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    // backgroundColor: "white",
     paddingHorizontal: 20,
     justifyContent: "flex-start",
   },
@@ -89,9 +106,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginTop: 90,
     marginBottom: 40,
-    width: 220,
+    width: 150,
     height: 50,
-    resizeMode: "cover",
+    resizeMode: "contain",
   },
   title: {
     fontSize: 22,
@@ -101,7 +118,7 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   forgotPassword: {
-    marginTop: 1,
+    marginTop: 8,
     alignSelf: "flex-end",
   },
   forgotPasswordText: {

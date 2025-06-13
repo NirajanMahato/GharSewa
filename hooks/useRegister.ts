@@ -6,8 +6,9 @@ import { useState } from "react";
 import { Alert } from "react-native";
 
 interface RegisterResponse {
-  user: UserProfile;
+  data: UserProfile;
   token?: string;
+  message?: string;
 }
 
 export const useRegister = () => {
@@ -46,9 +47,11 @@ export const useRegister = () => {
       );
 
       const data = response.data;
-      const userId = data.user._id;
+      console.log("Registration successful:", data.data);
 
-      router.push({
+      const userId = data.data._id;
+
+      router.replace({
         pathname: "/registerStepTwo",
         params: { userId }, // Pass it through router
       });

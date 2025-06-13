@@ -8,7 +8,7 @@ const index = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      router.push("/(auth)/login");
+      router.replace("/(auth)/login");
     }, 2000);
   }, []);
 
