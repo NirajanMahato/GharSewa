@@ -15,7 +15,7 @@ export const colors = {
   border: "#E5E7EB",
   placeholder: "#9CA3AF",
 
-  text: "#fff",
+  text: "#0A0A0A",
   textLight: "#e5e5e5",
   textLighter: "#d4d4d4",
   rose: "#ef4444",

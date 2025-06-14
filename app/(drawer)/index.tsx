@@ -1,6 +1,9 @@
+// app/(drawer)/index.tsx
 import { colors, fonts } from "@/constants/theme";
 import { Feather } from "@expo/vector-icons";
-import { DrawerActions, useNavigation } from '@react-navigation/native';
+import { DrawerActions, useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -18,12 +21,27 @@ import {
 
 const backgroundImg = require("@/assets/images/map-bg.jpg");
 
+type RootStackParamList = {
+  problems: { location: string };
+};
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
 const Home = () => {
   const [address, setAddress] = useState("");
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const cardAnim = useRef(new Animated.Value(200)).current;
   const keyboardOffset = useRef(new Animated.Value(0)).current;
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
+  const router = useRouter();
+  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+  const predefinedPlaces = [
+    "New Road",
+    "Thamel",
+    "Baneshwor",
+    "Patan",
+    "Koteshwor",
+  ];
 
   useEffect(() => {
     Animated.timing(cardAnim, {
@@ -135,13 +153,11 @@ const Home = () => {
           color={colors.primary}
           style={{ marginBottom: 12 }}
         />
-
         {/* Title & Subtitle */}
         <Text style={styles.title}>Let's get you fixed up!</Text>
         <Text style={styles.subtitle}>
           We'll connect you with nearby professionals in seconds.
         </Text>
-
         {/* Input with icon */}
         <View style={styles.inputContainer}>
           <Feather
@@ -155,12 +171,66 @@ const Home = () => {
             placeholder="Enter your location"
             placeholderTextColor={colors.neutral500}
             value={address}
-            onChangeText={setAddress}
+            onChangeText={(text) => {
+              setAddress(text);
+              const suggestions = predefinedPlaces.filter((place) =>
+                place.toLowerCase().includes(text.toLowerCase())
+              );
+              setFilteredSuggestions(suggestions);
+            }}
           />
+          {filteredSuggestions.length > 0 && (
+            <View
+              style={{
+                alignSelf: "flex-start",
+                width: "100%",
+                backgroundColor: colors.white,
+                borderColor: colors.neutral300,
+                borderWidth: 1,
+                borderRadius: 10,
+                marginBottom: 14,
+                paddingVertical: 6,
+                zIndex: 99,
+              }}
+            >
+              {filteredSuggestions.map((place) => (
+                <TouchableOpacity
+                  key={place}
+                  onPress={() => {
+                    setAddress(place);
+                    setFilteredSuggestions([]);
+                    Keyboard.dismiss();
+                  }}
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 16,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: fonts.regular,
+                      color: colors.black,
+                    }}
+                  >
+                    {place}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
-
-        {/* Search Button */}
-        <TouchableOpacity style={styles.searchBtn}>
+       
+        <TouchableOpacity
+          style={styles.searchBtn}
+          onPress={() => {
+            if (address.trim()) {
+              router.push({
+                pathname: "/(problems)",
+                params: { location: address.trim() }
+              });
+            }
+          }}
+        >
           <Text style={styles.searchBtnText}>Find Technicians</Text>
         </TouchableOpacity>
       </Animated.View>
