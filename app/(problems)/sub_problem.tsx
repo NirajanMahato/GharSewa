@@ -1,42 +1,43 @@
 import BackButton from "@/components/BackButton";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { fonts } from "@/constants/theme";
-import { useRouter } from "expo-router";
-import { Lightning, Lock, Thermometer, Wrench } from "phosphor-react-native";
-import React from "react";
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Toolbox, Hammer, DropHalf, Fan, Lightning, Wrench } from "phosphor-react-native";
+import React from "react";
 
-const problems = [
-  {
-    label: "Plumbing",
-    icon: Wrench,
-    color: "#3B82F6", // Blue-500
-    description: "Pipes, leaks & repairs",
-  },
-  {
-    label: "Electrical",
-    icon: Lightning,
-    color: "#3B82F6", // Blue-500
-    description: "Wiring & power issues",
-  },
-  {
-    label: "Locksmith",
-    icon: Lock,
-    color: "#3B82F6", // Blue-500
-    description: "Keys & security",
-  },
-  {
-    label: "HVAC",
-    icon: Thermometer,
-    color: "#3B82F6", // Blue-500
-    description: "Heating & cooling",
-  },
-];
+const subProblemsMap: Record<string, { label: string; icon: any; description: string;  }[]> = {
+  Plumbing: [
+    { label: "Leak Repair", icon: DropHalf, description: "Fix dripping faucets or pipes", },
+    { label: "Clog Removal", icon: Toolbox, description: "Clear sinks or drains", },
+    { label: "Installation", icon: Hammer, description: "Install fixtures or water systems", },
+  ],
+  Electrical: [
+    { label: "Power Outage", icon: Lightning, description: "Fix fuse or circuit issues",  },
+    { label: "Lighting", icon: Hammer, description: "Replace or fix lighting systems",},
+    { label: "Wiring", icon: Wrench, description: "Repair or install wiring",  },
+  ],
+  Locksmith: [
+    { label: "Key Duplication", icon: Hammer, description: "Duplicate or replace keys",},
+    { label: "Lock Installation", icon: Toolbox, description: "Install or change locks", },
+    { label: "Emergency Unlock", icon: DropHalf, description: "Open locked doors quickly", },
+  ],
+  HVAC: [
+    { label: "AC Repair", icon: Fan, description: "Fix cooling system issues", },
+    { label: "Heater Install", icon: Toolbox, description: "Install new heating units", },
+    { label: "Maintenance", icon: Hammer, description: "Routine HVAC servicing" },
+  ],
+};
 
-const ProblemSelectionScreen = () => {
+const SubProblemScreen = () => {
+  const { type } = useLocalSearchParams<{ type: string }>();
   const router = useRouter();
+  const subProblems = subProblemsMap[type ?? ""] || [];
 
-  const handleSelect = (type: string) => {
-    router.push({ pathname: "/(problems)/sub_problem", params: { type } });
+  const handleSubSelect = (subProblem: string) => {
+    router.push({ 
+      pathname: "/(problems)/search_type", 
+      params: { type, subProblem } 
+    });
   };
 
   return (
@@ -49,22 +50,24 @@ const ProblemSelectionScreen = () => {
         
         <View style={styles.content}>
           <View style={styles.titleSection}>
-            <Text style={styles.title}>What service do you need?</Text>
-            
+            <Text style={styles.title}>Select {type} Service</Text>
+            <Text style={styles.subtitle}>
+              Choose the specific service you need
+            </Text>
           </View>
 
           <View style={styles.grid}>
-            {problems.map((item, index) => {
+            {subProblems.map((item, index) => {
               const Icon = item.icon;
               return (
                 <TouchableOpacity
                   key={item.label}
                   style={styles.card}
-                  onPress={() => handleSelect(item.label)}
+                  onPress={() => handleSubSelect(item.label)}
                   activeOpacity={0.8}
                 >
-                  <View style={[styles.iconContainer, { backgroundColor: item.color + "15" }]}>
-                    <Icon color={item.color} size={32} weight="duotone" />
+                  <View style={[styles.iconContainer, { backgroundColor: "#3B82F6" + "15"}]}>
+                    <Icon color={"#3B82F6"} size={32} weight="duotone" />
                   </View>
                   <Text style={styles.cardLabel}>{item.label}</Text>
                   <Text style={styles.cardDescription}>{item.description}</Text>
@@ -72,15 +75,13 @@ const ProblemSelectionScreen = () => {
               );
             })}
           </View>
-
-          
         </View>
       </View>
     </>
   );
 };
 
-export default ProblemSelectionScreen;
+export default SubProblemScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -97,12 +98,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   titleSection: {
-    marginTop: 20,
-    marginBottom: 25,
+    marginBottom: 32,
     alignItems: "center",
   },
   title: {
-    fontSize: 23,
+    fontSize: 28,
     fontFamily: fonts.bold || "System",
     color: "#1F2937", // Gray-800
     marginBottom: 8,

@@ -1,116 +1,94 @@
-// app/(drawer)/index.tsx
 import { colors, fonts } from "@/constants/theme";
 import { Feather } from "@expo/vector-icons";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
+  Dimensions,
   Easing,
   ImageBackground,
   Keyboard,
-  Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View
+  View,
 } from "react-native";
+import LocationSuggestions from "./LocationSuggestions";
 
 const backgroundImg = require("@/assets/images/map-bg.jpg");
-
-type RootStackParamList = {
-  problems: { location: string };
-};
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+const SCREEN_HEIGHT = Dimensions.get("window").height;
 
 const Home = () => {
   const [address, setAddress] = useState("");
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
-  const cardAnim = useRef(new Animated.Value(200)).current;
-  const keyboardOffset = useRef(new Animated.Value(0)).current;
-  const navigation = useNavigation<NavigationProp>();
+  const [inputFocused, setInputFocused] = useState(false);
+  const cardAnim = useRef(new Animated.Value(0)).current;
+  const overlayOpacity = useRef(new Animated.Value(0.1)).current;
+  const navigation = useNavigation();
   const router = useRouter();
-  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
-  const predefinedPlaces = [
-    "New Road",
-    "Thamel",
-    "Baneshwor",
-    "Patan",
-    "Koteshwor",
+
+  const areaSuggestions = [
+    { title: "Ratopul", subtitle: "Kathmandu" },
+    { title: "Baneshwor", subtitle: "Kathmandu" },
+    { title: "Patan", subtitle: "Lalitpur" },
+    { title: "Boudha", subtitle: "Kathmandu" },
+    { title: "Thamel", subtitle: "Kathmandu" },
+    { title: "Baluwatar", subtitle: "Kathmandu" },
+    { title: "Lazimpat", subtitle: "Kathmandu" },
+    { title: "Jawalakhel", subtitle: "Lalitpur" },
+    { title: "Kumaripati", subtitle: "Lalitpur" },
+    { title: "Kalanki", subtitle: "Kathmandu" },
   ];
+
+  const filteredSuggestions =
+    address.trim().length === 0
+      ? areaSuggestions
+      : areaSuggestions.filter((s) =>
+          s.title.toLowerCase().includes(address.trim().toLowerCase())
+        );
+
+  const cardHeight = cardAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [275, SCREEN_HEIGHT * 0.92],
+  });
+
+  const cardRadius = cardAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [24, 0],
+  });
 
   useEffect(() => {
     Animated.timing(cardAnim, {
-      toValue: 0,
-      duration: 900,
+      toValue: inputFocused ? 1 : 0,
+      duration: 400,
       easing: Easing.out(Easing.exp),
-      useNativeDriver: true,
+      useNativeDriver: false,
     }).start();
-  }, []);
 
-  useEffect(() => {
-    const keyboardShow =
-      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-    const keyboardHide =
-      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+    Animated.timing(overlayOpacity, {
+      toValue: inputFocused ? 0.4 : 0.1,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  }, [inputFocused]);
 
-    const handleKeyboardShow = (e: any) => {
-      setKeyboardVisible(true);
-      Animated.parallel([
-        Animated.timing(keyboardOffset, {
-          toValue: e.endCoordinates ? e.endCoordinates.height : 260,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(overlayOpacity, {
-          toValue: 0.4, // Darker when keyboard is up
-          duration: 300,
-          useNativeDriver: false,
-        }),
-      ]).start();
-    };
-
-    const handleKeyboardHide = () => {
-      setKeyboardVisible(false);
-      Animated.parallel([
-        Animated.timing(keyboardOffset, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(overlayOpacity, {
-          toValue: 0.1, // Lighter when keyboard is down
-          duration: 300,
-          useNativeDriver: false,
-        }),
-      ]).start();
-    };
-
-    const showSub = Keyboard.addListener(keyboardShow, handleKeyboardShow);
-    const hideSub = Keyboard.addListener(keyboardHide, handleKeyboardHide);
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
-
-  // Overlay press handler to dismiss keyboard
   const handleOverlayPress = () => {
-    if (keyboardVisible) Keyboard.dismiss();
+    if (inputFocused) {
+      setInputFocused(false);
+      Keyboard.dismiss();
+    }
   };
-  const overlayOpacity = useRef(new Animated.Value(0.1)).current;
+
+  const handleSelectSuggestion = (suggestion: { title: string; subtitle: string }) => {
+    setAddress(suggestion.title);
+    setInputFocused(false);
+    Keyboard.dismiss();
+  };
 
   return (
-    <ImageBackground
-      source={backgroundImg}
-      style={styles.background}
-      resizeMode="cover"
-    >
-      {/* Overlay for contrast and keyboard dismiss */}
+    <ImageBackground source={backgroundImg} style={styles.background}>
       <TouchableWithoutFeedback onPress={handleOverlayPress}>
         <Animated.View
           style={[
@@ -122,11 +100,9 @@ const Home = () => {
               }),
             },
           ]}
-          pointerEvents="box-none"
         />
       </TouchableWithoutFeedback>
 
-      {/* Sidebar/Menu Button */}
       <TouchableOpacity
         style={styles.sidebarBtn}
         onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
@@ -134,31 +110,33 @@ const Home = () => {
         <Feather name="menu" size={28} color={colors.primary} />
       </TouchableOpacity>
 
-      {/* Animated Card */}
       <Animated.View
         style={[
           styles.card,
           {
-            transform: [
-              { translateY: cardAnim },
-              { translateY: Animated.multiply(keyboardOffset, -1) },
-            ],
+            height: cardHeight,
+            borderTopLeftRadius: cardRadius,
+            borderTopRightRadius: cardRadius,
           },
         ]}
       >
-        {/* Icon */}
-        <Feather
-          name="tool"
-          size={36}
-          color={colors.primary}
-          style={{ marginBottom: 12 }}
-        />
-        {/* Title & Subtitle */}
         <Text style={styles.title}>Let's get you fixed up!</Text>
         <Text style={styles.subtitle}>
           We'll connect you with nearby professionals in seconds.
         </Text>
-        {/* Input with icon */}
+
+        {inputFocused && (
+          <TouchableOpacity
+            style={styles.closeBtn}
+            onPress={() => {
+              setInputFocused(false);
+              Keyboard.dismiss();
+            }}
+          >
+            <Feather name="x" size={26} color={colors.neutral600} />
+          </TouchableOpacity>
+        )}
+
         <View style={styles.inputContainer}>
           <Feather
             name="map-pin"
@@ -171,68 +149,36 @@ const Home = () => {
             placeholder="Enter your location"
             placeholderTextColor={colors.neutral500}
             value={address}
-            onChangeText={(text) => {
-              setAddress(text);
-              const suggestions = predefinedPlaces.filter((place) =>
-                place.toLowerCase().includes(text.toLowerCase())
-              );
-              setFilteredSuggestions(suggestions);
-            }}
+            onChangeText={setAddress}
+            onFocus={() => setInputFocused(true)}
           />
-          {filteredSuggestions.length > 0 && (
-            <View
-              style={{
-                alignSelf: "flex-start",
-                width: "100%",
-                backgroundColor: colors.white,
-                borderColor: colors.neutral300,
-                borderWidth: 1,
-                borderRadius: 10,
-                marginBottom: 14,
-                paddingVertical: 6,
-                zIndex: 99,
-              }}
-            >
-              {filteredSuggestions.map((place) => (
-                <TouchableOpacity
-                  key={place}
-                  onPress={() => {
-                    setAddress(place);
-                    setFilteredSuggestions([]);
-                    Keyboard.dismiss();
-                  }}
-                  style={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 16,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontFamily: fonts.regular,
-                      color: colors.black,
-                    }}
-                  >
-                    {place}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
         </View>
-       
-        <TouchableOpacity
-          style={styles.searchBtn}
-          onPress={() => {
-            if (address.trim()) {
-              router.push({
-                pathname: "/(problems)",
-                params: { location: address.trim() }
-              });
+
+        {inputFocused && (
+          <>
+            <TouchableOpacity style={styles.chooseOnMapBtn}>
+              <Text style={styles.chooseOnMapText}>Choose on map</Text>
+            </TouchableOpacity>
+
+            <View style={{ flex: 1, width: "100%" }}>
+              <LocationSuggestions
+                suggestions={filteredSuggestions}
+                onSelect={handleSelectSuggestion}
+              />
+            </View>
+          </>
+        )}
+
+        {!inputFocused && (
+          <TouchableOpacity
+            style={styles.searchBtn}
+            onPress={() =>
+              router.push({ pathname: "/(problems)", params: { location: address } })
             }
-          }}
-        >
-          <Text style={styles.searchBtnText}>Find Technicians</Text>
-        </TouchableOpacity>
+          >
+            <Text style={styles.searchBtnText}>Start a search</Text>
+          </TouchableOpacity>
+        )}
       </Animated.View>
     </ImageBackground>
   );
@@ -243,8 +189,6 @@ export default Home;
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    width: "100%",
-    height: "100%",
     justifyContent: "flex-end",
   },
   overlay: {
@@ -258,26 +202,41 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.95)",
     borderRadius: 16,
     padding: 10,
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    zIndex: 10,
+    zIndex: 9,
   },
   card: {
     backgroundColor: "rgba(255,255,255,0.97)",
-    paddingBottom: 50,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
     padding: 24,
     elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.18,
-    shadowRadius: 8,
     alignItems: "center",
-    zIndex: 2,
+    zIndex: 10,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    height: 55,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.neutral300,
+    paddingHorizontal: 16,
+    backgroundColor: colors.neutral100,
+    marginBottom: 12,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.textPrimary,
+    fontFamily: fonts.regular,
+  },
+  closeBtn: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    zIndex: 20,
+    backgroundColor: "#f2f2f2",
+    borderRadius: 20,
+    padding: 4,
   },
   title: {
     fontSize: 22,
@@ -293,24 +252,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontFamily: fonts.regular,
   },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    height: 55,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.neutral300,
-    paddingHorizontal: 16,
-    backgroundColor: colors.neutral100,
-    marginBottom: 18,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: colors.textPrimary,
-    fontFamily: fonts.regular,
-  },
   searchBtn: {
     width: "100%",
     height: 55,
@@ -318,17 +259,21 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 2,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
   },
   searchBtnText: {
     color: colors.white,
     fontSize: 16,
     fontWeight: "600",
-    letterSpacing: 0.5,
     fontFamily: fonts.medium,
+  },
+  chooseOnMapBtn: {
+    marginTop: 6,
+    marginBottom: 8,
+    padding: 8,
+  },
+  chooseOnMapText: {
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
