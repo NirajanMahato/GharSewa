@@ -49,7 +49,6 @@ const RegisterStepTwo = () => {
 
   return (
     <ScreenWrapper>
-      {/* Header Section */}
       <View style={styles.header}>
         <BackButton />
         <Image
@@ -61,7 +60,6 @@ const RegisterStepTwo = () => {
       </View>
 
       <View style={styles.container}>
-        {/* Image Placeholder */}
         <View style={styles.imageContainer}>
           <Ionicons
             name="location-outline"
@@ -71,16 +69,13 @@ const RegisterStepTwo = () => {
           />
         </View>
 
-        {/* Title */}
         <Typo style={styles.title}>Allow location access?</Typo>
 
-        {/* Subtitle */}
         <Typo style={styles.subtitle}>
           We need your location access to easily find GharSewa professionals
           around you.
         </Typo>
 
-        {/* Buttons */}
         <PrimaryButton
           title="Allow location access"
           onPress={handleAllowLocation}
@@ -141,7 +136,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     resizeMode: "contain",
-    tintColor: colors.neutral300, // If you want a placeholder grey color
+    tintColor: colors.neutral300,
   },
   title: {
     fontSize: 24,
