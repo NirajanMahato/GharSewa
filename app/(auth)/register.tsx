@@ -12,6 +12,7 @@ import {
   isValidPassword,
   isValidPhone,
 } from "@/utils/validation";
+import { Feather } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
   Image,
@@ -28,6 +29,7 @@ const Register = () => {
   const [emailAddress, setEmailAddress] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [errors, setErrors] = useState({
     fullName: "",
@@ -146,13 +148,20 @@ const Register = () => {
             <InputField
               label="Password"
               placeholder="Enter your password"
-              secureTextEntry
+              secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}
+              rightIcon={
+                <Feather
+                  name={showPassword ? "eye-off" : "eye"}
+                  size={18}
+                  color={colors.neutral500}
+                  onPress={() => setShowPassword(!showPassword)}
+                />
+              }
             />
             <ValidationError message={errors.password} />
 
-            {/* Next Button */}
             <PrimaryButton
               title={loading ? "Processing..." : "Next"}
               onPress={handleNext}

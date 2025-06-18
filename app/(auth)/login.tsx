@@ -5,6 +5,7 @@ import ScreenWrapper from "@/components/ScreenWrapper";
 import Typo from "@/components/Typo";
 import { colors, fonts } from "@/constants/theme";
 import { useLogin } from "@/hooks/useLogin";
+import { Feather } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -14,6 +15,7 @@ import Toast from "react-native-toast-message";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const { loginUser, loading: isLoading } = useLogin();
   const router = useRouter();
 
@@ -28,12 +30,12 @@ const Login = () => {
       });
     }
   };
-  
 
   useFocusEffect(
     useCallback(() => {
       setEmail("");
       setPassword("");
+      setShowPassword(false);
     }, [])
   );
 
@@ -61,9 +63,17 @@ const Login = () => {
         <InputField
           label="Password"
           placeholder="Enter password"
-          secureTextEntry
+          secureTextEntry={!showPassword}
           value={password}
           onChangeText={setPassword}
+          rightIcon={
+            <Feather
+              name={showPassword ? "eye-off" : "eye"}
+              size={18}
+              color={colors.neutral500}
+              onPress={() => setShowPassword(!showPassword)}
+            />
+          }
         />
 
         <TouchableOpacity
@@ -83,7 +93,7 @@ const Login = () => {
         />
 
         <View style={styles.registerContainer}>
-          <Typo style={styles.registerText}>Don’t have an account? </Typo>
+          <Typo style={styles.registerText}>Don't have an account? </Typo>
           <TouchableOpacity onPress={handleRegister}>
             <Typo style={styles.registerLink}>Register</Typo>
           </TouchableOpacity>
