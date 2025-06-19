@@ -1,4 +1,5 @@
 import { colors } from "@/constants/theme";
+import { AuthContext } from "@/context/AuthContext";
 import { useFetchUser } from "@/hooks/useFetchUser";
 import {
   AntDesign,
@@ -9,14 +10,8 @@ import {
 } from "@expo/vector-icons";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import React from "react";
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { useContext } from "react";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const options = [
   {
@@ -55,6 +50,8 @@ const Profile = () => {
   const navigation = useNavigation();
   const router = useRouter();
   const { user, loading } = useFetchUser();
+  const authContext = useContext(AuthContext);
+  const logout = authContext?.logout;
 
   const handleOptionPress = (key: string, route?: string) => {
     if (key === "logout") {
@@ -63,7 +60,12 @@ const Profile = () => {
         {
           text: "Logout",
           style: "destructive",
-          onPress: () => router.replace("/(auth)/login"),
+          onPress: async () => {
+            if (logout) {
+              await logout();
+            }
+            router.replace("/(auth)/login");
+          },
         },
       ]);
     } else if (route) {

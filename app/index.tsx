@@ -1,16 +1,28 @@
 import { colors } from "@/constants/theme";
+import { AuthContext } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Image, StyleSheet, View } from "react-native";
 
 const index = () => {
   const router = useRouter();
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     setTimeout(() => {
-      router.replace("/(auth)/login");
+      if (authContext?.user) {
+        // User is authenticated, redirect based on role
+        if (authContext.user.role === "technician") {
+          router.replace("/(technician)");
+        } else {
+          router.replace("/(drawer)");
+        }
+      } else {
+        // User is not authenticated, redirect to login
+        router.replace("/(auth)/login");
+      }
     }, 2000);
-  }, []);
+  }, [authContext?.user]);
 
   return (
     <View style={styles.container}>

@@ -1,21 +1,22 @@
 // hooks/useLogin.ts
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "@/context/AuthContext";
 import axios from "axios";
-import Constants from "expo-constants";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 interface LoginResponse {
   message: string;
   user: {
     id: string;
-    role: string;
+    role: "customer" | "technician" | "admin";
     token: string;
+    fullName: string;
+    email: string;
+    profilePicture?: string;
   };
 }
 
 export const useLogin = () => {
-  const router = useRouter();
+  const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 
   const loginUser = async ({
@@ -27,6 +28,10 @@ export const useLogin = () => {
   }) => {
     if (!email || !password) {
       throw new Error("All fields are required.");
+    }
+
+    if (!authContext) {
+      throw new Error("Auth context not available.");
     }
 
     try {
@@ -43,9 +48,8 @@ export const useLogin = () => {
       );
 
       const { user } = response.data;
-      await AsyncStorage.setItem("user", JSON.stringify(user));
+      await authContext.login(user);
       console.log("User logged in:", user);
-      router.replace("/(drawer)");
     } catch (error: any) {
       const message =
         error.response?.data?.message || "Login failed. Please try again.";

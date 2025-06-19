@@ -11,27 +11,20 @@ export default function CustomTabs({
 }: BottomTabBarProps) {
   const tabbarIcons: any = {
     index: (isFocused: boolean) => (
-      <Icons.House
+      <Icons.ListBullets
         size={verticalScale(30)}
         weight={isFocused ? "fill" : "regular"}
         color={isFocused ? colors.primary : colors.neutral400}
       />
     ),
-    request: (isFocused: boolean) => (
-      <Icons.Book
+    income: (isFocused: boolean) => (
+      <Icons.BriefcaseMetal
         size={verticalScale(30)}
         weight={isFocused ? "fill" : "regular"}
         color={isFocused ? colors.primary : colors.neutral400}
       />
     ),
-    message: (isFocused: boolean) => (
-      <Icons.Chat
-        size={verticalScale(30)}
-        weight={isFocused ? "fill" : "regular"}
-        color={isFocused ? colors.primary : colors.neutral400}
-      />
-    ),
-    account: (isFocused: boolean) => (
+    profile: (isFocused: boolean) => (
       <Icons.User
         size={verticalScale(30)}
         weight={isFocused ? "fill" : "regular"}

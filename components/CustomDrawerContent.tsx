@@ -1,14 +1,18 @@
 // app/components/CustomDrawerContent.tsx
 
 import { colors, fonts } from "@/constants/theme";
+import { AuthContext } from "@/context/AuthContext";
 import { Feather } from "@expo/vector-icons";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { usePathname, useRouter } from "expo-router";
+import { useContext } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import Toast from "react-native-toast-message";
 
 const CustomDrawerContent = (props: any) => {
   const router = useRouter();
   const pathname = usePathname();
+  const { user } = useContext(AuthContext) ?? {};
 
   const drawerItems = [
     { label: "Home", route: "/", icon: "home" },
@@ -17,7 +21,18 @@ const CustomDrawerContent = (props: any) => {
   ];
 
   const handleTechnicianMode = () => {
-    router.push("/technician"); // or toggle some technician state
+    if (user?.role === "technician") {
+      router.push("/(technician)");
+    } else if (user?.role === "customer") {
+      Toast.show({
+        type: "error",
+        text1: "Technician Access Restricted",
+        text2: "You must register as a technician to access this feature.",
+      });
+      router.push("/(drawer)");
+    } else {
+      router.push("/(auth)/login");
+    }
   };
 
   return (
@@ -70,13 +85,12 @@ const CustomDrawerContent = (props: any) => {
         </View>
       </DrawerContentScrollView>
 
-      {/* Technician Mode Button */}
       <Pressable style={styles.bottomButton} onPress={handleTechnicianMode}>
         <Text style={styles.bottomButtonText}>Technician Mode</Text>
       </Pressable>
     </View>
   );
-}
+};
 
 export default CustomDrawerContent;
 
