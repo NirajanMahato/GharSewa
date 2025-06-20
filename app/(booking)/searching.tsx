@@ -5,15 +5,20 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import LottieView from "lottie-react-native";
 import React, { useEffect, useRef } from "react";
 import { Animated, StatusBar, StyleSheet, Text, View } from "react-native";
+import io from "socket.io-client";
+
+const SOCKET_URL = "http://localhost:5000"; // Change to your backend URL if needed
+const socket = io(SOCKET_URL);
 
 const SearchingScreen = () => {
-  const { type, subProblem } = useLocalSearchParams<{
+  const { type, subProblem, bookingId } = useLocalSearchParams<{
     type: string;
     subProblem: string;
+    bookingId?: string;
   }>();
   const router = useRouter();
-  
-  const dot1 = useRef(new Animated.Value(0.3)).current;     // Simple dot animation
+
+  const dot1 = useRef(new Animated.Value(0.3)).current; // Simple dot animation
   const dot2 = useRef(new Animated.Value(0.3)).current;
   const dot3 = useRef(new Animated.Value(0.3)).current;
 
@@ -48,13 +53,34 @@ const SearchingScreen = () => {
       });
     }, 4000);
 
-    return () => clearTimeout(timeout);
-  }, []);
+    if (bookingId) {
+      socket.emit("start_rapid_booking", { bookingId });
+      socket.on("booking_update", ({ status }) => {
+        if (status === "accepted") {
+          router.replace({
+            pathname: "/(booking)/technician_found",
+            params: { type, subProblem, bookingId },
+          });
+        } else if (status === "rejected") {
+          // Show failure UI or navigate to a failure screen
+          router.replace({
+            pathname: "/(booking)/technician_found",
+            params: { type, subProblem, bookingId, failed: "1" },
+          });
+        }
+      });
+    }
+
+    return () => {
+      clearTimeout(timeout);
+      socket.off("booking_update");
+    };
+  }, [bookingId]);
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-      
+
       <View style={styles.header}>
         <Typo style={styles.title}>Finding Your Expert</Typo>
       </View>
@@ -70,7 +96,7 @@ const SearchingScreen = () => {
 
       <View style={styles.statusContainer}>
         <Text style={styles.statusText}>Looking for technicians nearby</Text>
-        
+
         <View style={styles.dotsContainer}>
           <Animated.View style={[styles.dot, { opacity: dot1 }]} />
           <Animated.View style={[styles.dot, { opacity: dot2 }]} />
@@ -98,24 +124,24 @@ export default SearchingScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     paddingHorizontal: 24,
     paddingTop: 60,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 30,
-    marginTop:80,
+    marginTop: 80,
   },
   title: {
     fontSize: 28,
     fontFamily: fonts.bold,
-    color: '#1f2937',
-    textAlign: 'center',
+    color: "#1f2937",
+    textAlign: "center",
   },
   animationContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     height: 250,
     marginBottom: 20,
   },
@@ -124,18 +150,18 @@ const styles = StyleSheet.create({
     height: 250,
   },
   statusContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 24,
   },
   statusText: {
     fontSize: 18,
     fontFamily: fonts.semiBold || fonts.bold,
-    color: '#1f2937',
+    color: "#1f2937",
     marginBottom: 12,
   },
   dotsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 8,
   },
@@ -143,37 +169,37 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#3b82f6',
+    backgroundColor: "#3b82f6",
   },
   serviceCard: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: "#f9fafb",
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: "#e5e7eb",
   },
   serviceRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 6,
   },
   serviceDivider: {
     height: 1,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: "#e5e7eb",
     marginVertical: 2,
   },
   serviceLabel: {
     fontSize: 14,
     fontFamily: fonts.regular,
-    color: '#6b7280',
+    color: "#6b7280",
   },
   serviceValue: {
     fontSize: 14,
     fontFamily: fonts.semiBold || fonts.bold,
-    color: '#1f2937',
+    color: "#1f2937",
     flex: 1,
-    textAlign: 'right',
+    textAlign: "right",
     marginLeft: 16,
   },
 });

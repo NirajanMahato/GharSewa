@@ -1,7 +1,9 @@
 import BackButton from "@/components/BackButton";
 import { colors, fonts } from "@/constants/theme";
+import { AuthContext } from "@/context/AuthContext";
 import { Feather } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import axios from "axios";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -19,37 +21,71 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const API_URL = "http://localhost:5000/api/bookings";
+
 const CustomSearchScreen = () => {
   const { type, subProblem, searchType } = useLocalSearchParams();
   const router = useRouter();
+  const { user, token } = React.useContext(AuthContext) as any;
 
   const [budgetMin, setBudgetMin] = useState("100");
   const [budgetMax, setBudgetMax] = useState("250");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const onSubmit = () => {
-    router.push({
-      pathname: "/(booking)/searching",
-      params: { type, subProblem, searchType: "custom" },
-    });
+  const onSubmit = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await axios.post(
+        API_URL,
+        {
+          serviceType: type,
+          problemType: subProblem,
+          customProblem: description,
+          estimatedCost: Number(budgetMax),
+          address: user?.address || "",
+          preferredDate: date.toISOString().split("T")[0],
+          preferredTime: "09:00", // or let user pick
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const bookingId = (res as any).data?.data?._id;
+      if (bookingId) {
+        router.replace({
+          pathname: "/(booking)/searching",
+          params: { type, subProblem, bookingId },
+        });
+      } else {
+        setError("Failed to create booking. Please try again.");
+      }
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message ||
+          "Something went wrong. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formatDate = (date: Date) => {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-    
+
     if (date.toDateString() === today.toDateString()) {
       return "Today";
     } else if (date.toDateString() === tomorrow.toDateString()) {
       return "Tomorrow";
     } else {
-      return date.toLocaleDateString('en-US', { 
-        weekday: 'short', 
-        month: 'short', 
-        day: 'numeric' 
+      return date.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
       });
     }
   };
@@ -61,9 +97,9 @@ const CustomSearchScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-      
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === "ios" ? "padding" : "height"} 
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardContainer}
       >
         <TouchableWithoutFeedback onPress={dismissKeyboard}>
@@ -74,7 +110,19 @@ const CustomSearchScreen = () => {
               <View style={{ width: 24 }} />
             </View>
 
-            <ScrollView 
+            {error ? (
+              <Text
+                style={{
+                  color: "#dc2626",
+                  textAlign: "center",
+                  marginVertical: 8,
+                }}
+              >
+                {error}
+              </Text>
+            ) : null}
+
+            <ScrollView
               style={styles.scrollContainer}
               contentContainerStyle={styles.content}
               showsVerticalScrollIndicator={false}
@@ -135,21 +183,21 @@ const CustomSearchScreen = () => {
                 </TouchableOpacity>
                 {showDatePicker && (
                   <DateTimePicker
-                  value={date}
-                  mode="date"
-                  display={Platform.OS === "ios" ? "spinner" : "calendar"} // "calendar" works better on Android
-                  minimumDate={new Date()}
-                  maximumDate={new Date(new Date().setDate(new Date().getDate() + 30))}
-                  onChange={(event, selectedDate) => {
-                    setShowDatePicker(false);
-                
-                    if (selectedDate && selectedDate >= new Date()) {
-                      setDate(selectedDate);
+                    value={date}
+                    mode="date"
+                    display={Platform.OS === "ios" ? "spinner" : "calendar"} // "calendar" works better on Android
+                    minimumDate={new Date()}
+                    maximumDate={
+                      new Date(new Date().setDate(new Date().getDate() + 30))
                     }
-                  }}
-                />
-                
-                
+                    onChange={(event, selectedDate) => {
+                      setShowDatePicker(false);
+
+                      if (selectedDate && selectedDate >= new Date()) {
+                        setDate(selectedDate);
+                      }
+                    }}
+                  />
                 )}
               </View>
 
@@ -173,16 +221,23 @@ const CustomSearchScreen = () => {
             </ScrollView>
 
             <View style={styles.submitContainer}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[
                   styles.submitButton,
-                  (!budgetMin || !budgetMax) && styles.submitButtonDisabled
-                ]} 
+                  (!budgetMin || !budgetMax || loading) &&
+                    styles.submitButtonDisabled,
+                ]}
                 onPress={onSubmit}
-                disabled={!budgetMin || !budgetMax}
+                disabled={!budgetMin || !budgetMax || loading}
               >
-                <Text style={styles.submitText}>Find Technician</Text>
-                <Feather name="arrow-right" size={20} color="#ffffff" />
+                {loading ? (
+                  <Text style={styles.submitText}>Loading...</Text>
+                ) : (
+                  <>
+                    <Text style={styles.submitText}>Find Technician</Text>
+                    <Feather name="arrow-right" size={20} color="#ffffff" />
+                  </>
+                )}
               </TouchableOpacity>
             </View>
           </View>

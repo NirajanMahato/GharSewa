@@ -1,52 +1,97 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
-  StatusBar,
-} from "react-native";
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { colors, fonts } from "@/constants/theme";
+import { AuthContext } from "@/context/AuthContext";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-const payouts = [
-  { id: 1, date: "2024-06-20", amount: 2200 },
-  { id: 2, date: "2024-06-12", amount: 1800 },
-  { id: 3, date: "2024-06-05", amount: 1600 },
-];
+const API_URL = "http://localhost:5000/api/bookings/income";
 
 const Income = () => {
+  const { token } = useContext(AuthContext) as any;
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [total, setTotal] = useState(0);
+  const [monthly, setMonthly] = useState(0);
+  const [payouts, setPayouts] = useState<any[]>([]);
+
+  useEffect(() => {
+    setLoading(true);
+    setError("");
+    Promise.resolve(
+      axios.get(API_URL, { headers: { Authorization: `Bearer ${token}` } })
+    )
+      .then((res) => {
+        setTotal((res as any).data.totalEarnings);
+        setMonthly((res as any).data.monthlyEarnings);
+        setPayouts((res as any).data.payouts);
+      })
+      .catch(() => setError("Failed to load income data."))
+      .finally(() => setLoading(false));
+  }, [token]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        <View style={styles.summaryCard}>
-          <FontAwesome5 name="wallet" size={26} color={colors.primary} />
-          <Text style={styles.totalLabel}>Total Earnings</Text>
-          <Text style={styles.totalAmount}>NPR 32,500</Text>
-        </View>
-
-        {/* Monthly Overview */}
-        <View style={styles.monthCard}>
-          <Ionicons name="calendar" size={22} color={colors.primary} />
-          <View style={{ marginLeft: 12 }}>
-            <Text style={styles.monthLabel}>June Earnings</Text>
-            <Text style={styles.monthAmount}>NPR 5,600</Text>
-          </View>
-        </View>
-
-        {/* Recent Payouts */}
-        <Text style={styles.sectionTitle}>Recent Payouts</Text>
-        {payouts.map((item) => (
-          <View key={item.id} style={styles.payoutItem}>
-            <Text style={styles.payoutDate}>{item.date}</Text>
-            <Text style={styles.payoutAmount}>NPR {item.amount}</Text>
-          </View>
-        ))}
-
-        {payouts.length === 0 && (
-          <Text style={styles.noData}>No payout history available.</Text>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+      >
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color={colors.primary}
+            style={{ marginTop: 40 }}
+          />
+        ) : error ? (
+          <Text
+            style={{ color: "#dc2626", textAlign: "center", marginTop: 40 }}
+          >
+            {error}
+          </Text>
+        ) : (
+          <>
+            <View style={styles.summaryCard}>
+              <FontAwesome5 name="wallet" size={26} color={colors.primary} />
+              <Text style={styles.totalLabel}>Total Earnings</Text>
+              <Text style={styles.totalAmount}>
+                NPR {total.toLocaleString()}
+              </Text>
+            </View>
+            {/* Monthly Overview */}
+            <View style={styles.monthCard}>
+              <Ionicons name="calendar" size={22} color={colors.primary} />
+              <View style={{ marginLeft: 12 }}>
+                <Text style={styles.monthLabel}>June Earnings</Text>
+                <Text style={styles.monthAmount}>
+                  NPR {monthly.toLocaleString()}
+                </Text>
+              </View>
+            </View>
+            {/* Recent Payouts */}
+            <Text style={styles.sectionTitle}>Recent Payouts</Text>
+            {payouts.map((item) => (
+              <View key={item.id} style={styles.payoutItem}>
+                <Text style={styles.payoutDate}>
+                  {new Date(item.date).toLocaleDateString()}
+                </Text>
+                <Text style={styles.payoutAmount}>
+                  NPR {item.amount.toLocaleString()}
+                </Text>
+              </View>
+            ))}
+            {payouts.length === 0 && (
+              <Text style={styles.noData}>No payout history available.</Text>
+            )}
+          </>
         )}
       </ScrollView>
     </SafeAreaView>
