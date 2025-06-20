@@ -2,7 +2,13 @@ import { colors, spacingY } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import * as Icons from "phosphor-react-native";
-import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function CustomTabs({
   state,
@@ -13,24 +19,30 @@ export default function CustomTabs({
     index: (isFocused: boolean) => (
       <Icons.ListBullets
         size={verticalScale(30)}
-        weight={isFocused ? "fill" : "regular"}
-        color={isFocused ? colors.primary : colors.neutral400}
+        // weight={isFocused ? "fill" : "regular"}
+        color={isFocused ? colors.primary : colors.neutral600}
       />
     ),
     income: (isFocused: boolean) => (
       <Icons.BriefcaseMetal
         size={verticalScale(30)}
         weight={isFocused ? "fill" : "regular"}
-        color={isFocused ? colors.primary : colors.neutral400}
+        color={isFocused ? colors.primary : colors.neutral600}
       />
     ),
     profile: (isFocused: boolean) => (
       <Icons.User
         size={verticalScale(30)}
         weight={isFocused ? "fill" : "regular"}
-        color={isFocused ? colors.primary : colors.neutral400}
+        color={isFocused ? colors.primary : colors.neutral600}
       />
     ),
+  };
+
+  const tabbarLabels: Record<string, string> = {
+    index: "Requests",
+    income: "My income",
+    profile: "Profile",
   };
 
   return (
@@ -77,6 +89,16 @@ export default function CustomTabs({
             style={styles.tabbarItem}
           >
             {tabbarIcons[route.name] && tabbarIcons[route.name](isFocused)}
+            <Text
+              style={{
+                marginTop: 4,
+                fontSize: 12,
+                color: isFocused ? colors.primary : colors.neutral600,
+                fontWeight: isFocused ? "bold" : "normal",
+              }}
+            >
+              {tabbarLabels[route.name] || label}
+            </Text>
           </TouchableOpacity>
         );
       })}
@@ -88,11 +110,11 @@ const styles = StyleSheet.create({
   tabbar: {
     flexDirection: "row",
     width: "100%",
-    height: Platform.OS === "ios" ? verticalScale(73) : verticalScale(55),
-    backgroundColor: colors.neutral800,
+    height: Platform.OS === "ios" ? verticalScale(73) : verticalScale(65),
+    backgroundColor: colors.white,
     justifyContent: "space-around",
     alignItems: "center",
-    borderTopColor: colors.neutral700,
+    borderTopColor: colors.neutral200,
     borderTopWidth: 1,
   },
   tabbarItem: {
