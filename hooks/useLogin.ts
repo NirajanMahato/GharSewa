@@ -2,6 +2,7 @@
 import { AuthContext } from "@/context/AuthContext";
 import axios from "axios";
 import { useContext, useState } from "react";
+import Constants from "expo-constants";
 
 interface LoginResponse {
   message: string;
@@ -36,8 +37,8 @@ export const useLogin = () => {
 
     try {
       setLoading(true);
-      // const baseURL = Constants.expoConfig?.extra?.API_BASE_URL;
-      const baseURL = "http://192.168.1.74:5000"; // For real devices
+      const baseURL = Constants.expoConfig?.extra?.API_BASE_URL;
+      // const baseURL = "http://192.168.1.74:5000"; // For real devices
 
       const response = await axios.post<LoginResponse>(
         `${baseURL}/api/user/login`,
