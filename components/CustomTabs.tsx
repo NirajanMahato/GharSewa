@@ -30,6 +30,13 @@ export default function CustomTabs({
         color={isFocused ? colors.primary : colors.neutral600}
       />
     ),
+    messages: (isFocused: boolean) => (
+      <Icons.Chat
+        size={verticalScale(30)}
+        weight="regular"
+        color={isFocused ? colors.primary : colors.neutral600}
+      />
+    ),
     profile: (isFocused: boolean) => (
       <Icons.User
         size={verticalScale(30)}
@@ -41,7 +48,8 @@ export default function CustomTabs({
 
   const tabbarLabels: Record<string, string> = {
     index: "Requests",
-    income: "My income",
+    income: "Income",
+    messages: "Messages",
     profile: "Profile",
   };
 

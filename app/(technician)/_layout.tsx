@@ -28,6 +28,7 @@ export default function TechnicianLayout() {
     >
       <Tabs.Screen name="index" />
       <Tabs.Screen name="income" />
+      <Tabs.Screen name="messages" />
       <Tabs.Screen name="profile" />
     </Tabs>
   );
