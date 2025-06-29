@@ -17,6 +17,7 @@ const CustomDrawerContent = (props: any) => {
   const drawerItems = [
     { label: "Home", route: "/", icon: "home" },
     { label: "Profile", route: "/profile", icon: "user" },
+    { label: "Messages", route: "/message", icon: "message-circle" },
     { label: "Settings", route: "/settings", icon: "settings" },
   ];
 
