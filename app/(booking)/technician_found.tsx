@@ -26,7 +26,8 @@ import {
 } from "../mockdata/technicianData";
 
 const TechnicianFoundScreen = () => {
-  const { type, subProblem, bookingId } = useLocalSearchParams();
+  const { type, subProblem, bookingId, budget, description } =
+    useLocalSearchParams();
   const router = useRouter();
   const [technician, setTechnician] = React.useState<Technician | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -149,10 +150,31 @@ const TechnicianFoundScreen = () => {
                 <View>
                   <Text style={styles.infoLabel}>Service Charge</Text>
                   <Text style={styles.infoValue}>
-                    {technician?.serviceCharge || "$220"}
+                    {budget
+                      ? `Rs ${budget}`
+                      : technician?.serviceCharge || "Rs 220"}
                   </Text>
                 </View>
               </View>
+
+              {description && (
+                <View style={styles.infoRow}>
+                  <View style={{ width: 18, height: 18, marginRight: 12 }}>
+                    <Text style={{ fontSize: 12, color: "#6b7280" }}>📝</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.infoLabel}>Problem Description</Text>
+                    <Text
+                      style={[
+                        styles.infoValue,
+                        { fontSize: 12, lineHeight: 16 },
+                      ]}
+                    >
+                      {description}
+                    </Text>
+                  </View>
+                </View>
+              )}
             </View>
 
             <TouchableOpacity

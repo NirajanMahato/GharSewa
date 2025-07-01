@@ -19,8 +19,8 @@ export const technicianData: Technician = {
   reviewCount: 0,
   distance: "2.1 km away",
   arrivalTime: "10-15 minutes",
-  serviceCharge: "Rs 220",
-  avatar: undefined, // Will use default image
+  serviceCharge: "Rs 2200",
+  avatar: "https://ui-avatars.com/api/?name=MM&background=2563eb&color=fff", // Will use default image
   isOnline: true,
 };
 

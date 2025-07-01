@@ -1,9 +1,7 @@
 import BackButton from "@/components/BackButton";
 import { colors, fonts } from "@/constants/theme";
-import { AuthContext } from "@/context/AuthContext";
 import { Feather } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import axios from "axios";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -21,15 +19,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const API_URL = "http://localhost:5000/api/bookings";
-
 const CustomSearchScreen = () => {
   const { type, subProblem, searchType } = useLocalSearchParams();
   const router = useRouter();
-  const { user, token } = React.useContext(AuthContext) as any;
 
-  const [budgetMin, setBudgetMin] = useState("100");
-  const [budgetMax, setBudgetMax] = useState("250");
+  const [budgetMin, setBudgetMin] = useState("1000");
+  const [budgetMax, setBudgetMax] = useState("5000");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -39,37 +34,30 @@ const CustomSearchScreen = () => {
   const onSubmit = async () => {
     setLoading(true);
     setError("");
-    try {
-      const res = await axios.post(
-        API_URL,
-        {
-          serviceType: type,
-          problemType: subProblem,
-          customProblem: description,
-          estimatedCost: Number(budgetMax),
-          address: user?.address || "",
-          preferredDate: date.toISOString().split("T")[0],
-          preferredTime: "09:00", // or let user pick
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const bookingId = (res as any).data?.data?._id;
-      if (bookingId) {
+
+    // Simulate API call delay
+    setTimeout(() => {
+      try {
+        // Generate a dummy booking ID
+        const bookingId = `booking_${Date.now()}`;
+
+        // Redirect to technician found page with dummy data
         router.replace({
-          pathname: "/(booking)/searching",
-          params: { type, subProblem, bookingId },
+          pathname: "/(booking)/technician_found",
+          params: {
+            type,
+            subProblem,
+            bookingId,
+            budget: budgetMax,
+            description: description || "No description provided",
+          },
         });
-      } else {
-        setError("Failed to create booking. Please try again.");
+      } catch (err: any) {
+        setError("Something went wrong. Please try again.");
+      } finally {
+        setLoading(false);
       }
-    } catch (err: any) {
-      setError(
-        err?.response?.data?.message ||
-          "Something went wrong. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
+    }, 2000); // 2 second delay to simulate searching
   };
 
   const formatDate = (date: Date) => {
@@ -142,13 +130,13 @@ const CustomSearchScreen = () => {
                 <Text style={styles.sectionTitle}>Budget Range</Text>
                 <View style={styles.budgetContainer}>
                   <View style={styles.budgetInputContainer}>
-                    <Text style={styles.currency}>$</Text>
+                    <Text style={styles.currency}>Rs</Text>
                     <TextInput
                       style={styles.budgetInput}
                       keyboardType="numeric"
                       value={budgetMin}
                       onChangeText={setBudgetMin}
-                      placeholder="100"
+                      placeholder="1000"
                       placeholderTextColor="#9ca3af"
                     />
                   </View>
@@ -156,13 +144,13 @@ const CustomSearchScreen = () => {
                     <View style={styles.separatorLine} />
                   </View>
                   <View style={styles.budgetInputContainer}>
-                    <Text style={styles.currency}>$</Text>
+                    <Text style={styles.currency}>Rs</Text>
                     <TextInput
                       style={styles.budgetInput}
                       keyboardType="numeric"
                       value={budgetMax}
                       onChangeText={setBudgetMax}
-                      placeholder="250"
+                      placeholder="5000"
                       placeholderTextColor="#9ca3af"
                     />
                   </View>
