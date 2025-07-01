@@ -45,19 +45,7 @@ const Chat = () => {
   }>();
   const { user, token } = useContext(AuthContext) as any;
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "test-1",
-      text: "Hello! How can I help you today?",
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      sent: false,
-      senderId: "technician",
-      receiverId: "user",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [otherUserId, setOtherUserId] = useState<string>("");
   const flatListRef = useRef<FlatList<Message>>(null);
   const [loading, setLoading] = useState(false);

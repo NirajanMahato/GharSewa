@@ -1,10 +1,8 @@
 import Typo from "@/components/Typo";
 import { colors, fonts } from "@/constants/theme";
-import { AuthContext } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
 import { useRouter } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -13,47 +11,42 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import io from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:5000"; // Change to your backend URL if needed
-const API_URL = "http://localhost:5000/api/bookings";
-const socket = io(SOCKET_URL);
+const DUMMY_REQUEST = {
+  _id: "dummy-booking-1",
+  customer: {
+    fullName: "Nirajan Mahato",
+    address: "Kathmandu, Nepal",
+  },
+  serviceType: "Plumbing",
+  problemType: "Leaking Pipe",
+  address: "Kathmandu, Nepal",
+};
 
 const TechnicianDashboard = () => {
   const router = useRouter();
-  const { user, token } = useContext(AuthContext) as any;
-  const [requests, setRequests] = useState<any[]>([]);
+  const [requests, setRequests] = useState<any[]>([DUMMY_REQUEST]);
 
+  // Reset requests on mount (simulate fresh login)
   useEffect(() => {
-    if (!user) return;
-    socket.emit("join", user.id); // Join personal room
-    socket.on("booking_request", async (payload) => {
-      // payload: { bookingId }
-      try {
-        const res = await axios.get(`${API_URL}/${payload.bookingId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setRequests((prev) => [...prev, res.data]);
-      } catch (err) {
-        // fallback: just add bookingId
-        setRequests((prev) => [...prev, { _id: payload.bookingId }]);
-      }
-    });
-    return () => {
-      socket.off("booking_request");
-    };
-  }, [user, token]);
+    setRequests([DUMMY_REQUEST]);
+  }, []);
 
-  const handleResponse = (bookingId: string, response: "accept" | "reject") => {
-    if (!user) return;
-    socket.emit("booking_response", {
-      bookingId,
-      technicianId: user.id,
-      response,
+  const handleReject = (bookingId: string) => {
+    setRequests((prev) => prev.filter((r) => r._id !== bookingId));
+  };
+
+  const handleAccept = (booking: any) => {
+    router.push({
+      pathname: "/(tehcnicianPages)/service_details",
+      params: {
+        bookingId: booking._id,
+        customer: booking.customer.fullName,
+        serviceType: booking.serviceType,
+        problemType: booking.problemType,
+        address: booking.address,
+      },
     });
-    setRequests((prev) =>
-      prev.filter((r) => r._id !== bookingId && r.bookingId !== bookingId)
-    );
   };
 
   return (
@@ -72,28 +65,24 @@ const TechnicianDashboard = () => {
       </View>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {requests.map((req) => (
-          <View key={req._id || req.bookingId} style={styles.card}>
+          <View key={req._id} style={styles.card}>
             <View style={styles.cardHeader}>
               <Typo fontWeight="700" size={15}>
                 {req.customer?.fullName || "New Booking Request"}
               </Typo>
             </View>
             <Text style={styles.problemText}>Service: {req.serviceType}</Text>
-            <Text style={styles.problemText}>
-              Problem: {req.problemType || req.subProblem}
-            </Text>
+            <Text style={styles.problemText}>Problem: {req.problemType}</Text>
             <Text style={styles.problemText}>
               Address: {req.address || req.customer?.address}
             </Text>
             <View style={{ flexDirection: "row", marginTop: 10 }}>
               <TouchableOpacity
                 style={[styles.actionBtn, { backgroundColor: colors.primary }]}
-                onPress={() =>
-                  handleResponse(req._id || req.bookingId, "accept")
-                }
+                onPress={() => handleAccept(req)}
               >
                 <Text style={{ color: "#fff", fontWeight: "bold" }}>
-                  Accept
+                  Start Service
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -101,12 +90,10 @@ const TechnicianDashboard = () => {
                   styles.actionBtn,
                   { backgroundColor: colors.neutral300, marginLeft: 10 },
                 ]}
-                onPress={() =>
-                  handleResponse(req._id || req.bookingId, "reject")
-                }
+                onPress={() => handleReject(req._id)}
               >
                 <Text style={{ color: colors.textPrimary, fontWeight: "bold" }}>
-                  Reject
+                  Dismiss
                 </Text>
               </TouchableOpacity>
             </View>
