@@ -115,7 +115,6 @@ const Chat = () => {
 
   useEffect(() => {
     if (!bookingId || !user) return;
-    // Join chat room
     socket.emit("join_chat", { bookingId, userId: user.id });
     // Listen for incoming messages
     socket.on("receive_chat_message", (msg) => {
