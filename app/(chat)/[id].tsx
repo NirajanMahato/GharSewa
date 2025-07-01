@@ -45,13 +45,26 @@ const Chat = () => {
   }>();
   const { user, token } = useContext(AuthContext) as any;
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "test-1",
+      text: "Hello! How can I help you today?",
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      sent: false,
+      senderId: "technician",
+      receiverId: "user",
+    },
+  ]);
   const [otherUserId, setOtherUserId] = useState<string>("");
   const flatListRef = useRef<FlatList<Message>>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    console.log("Messages state changed:", messages);
     flatListRef.current?.scrollToEnd({ animated: true });
   }, [messages]);
 
@@ -141,63 +154,82 @@ const Chat = () => {
   }, [bookingId, user]);
 
   const handleSend = () => {
-    if (!input.trim() || !bookingId || !user) return;
-    const receiverId = otherUserId;
-    socket.emit("send_chat_message", {
-      bookingId,
-      senderId: user.id,
-      receiverId,
-      message: input.trim(),
+    if (!input.trim()) return;
+
+    console.log("Sending message:", input.trim());
+
+    // Add message to local state immediately for testing
+    const newMessage = {
+      id: Date.now().toString(),
+      text: input.trim(),
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      sent: true,
+      senderId: user?.id || "user",
+      receiverId: otherUserId || "technician",
+    };
+
+    console.log("New message object:", newMessage);
+
+    setMessages((prev) => {
+      const updatedMessages = [...prev, newMessage];
+      console.log("Updated messages array:", updatedMessages);
+      return updatedMessages;
     });
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        text: input.trim(),
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        sent: true,
-        senderId: user.id,
-        receiverId,
-      },
-    ]);
+
+    // Try to send via socket if available
+    if (bookingId && user) {
+      try {
+        socket.emit("send_chat_message", {
+          bookingId,
+          senderId: user.id,
+          receiverId: otherUserId,
+          message: input.trim(),
+        });
+      } catch (error) {
+        console.log("Socket error:", error);
+      }
+    }
+
     setInput("");
   };
 
-  const renderMessage = ({ item }: { item: Message }) => (
-    <View
-      style={[
-        styles.messageContainer,
-        item.sent ? styles.sentContainer : styles.receivedContainer,
-      ]}
-    >
+  const renderMessage = ({ item }: { item: Message }) => {
+    return (
       <View
         style={[
-          styles.messageBubble,
-          item.sent ? styles.sentBubble : styles.receivedBubble,
+          styles.messageContainer,
+          item.sent ? styles.sentContainer : styles.receivedContainer,
         ]}
       >
-        <Text
+        <View
           style={[
-            styles.messageText,
-            item.sent ? styles.sentText : styles.receivedText,
+            styles.messageBubble,
+            item.sent ? styles.sentBubble : styles.receivedBubble,
           ]}
         >
-          {item.text}
-        </Text>
-        <Text
-          style={[
-            styles.messageTime,
-            item.sent ? styles.sentTime : styles.receivedTime,
-          ]}
-        >
-          {item.time}
-        </Text>
+          <Text
+            style={[
+              styles.messageText,
+              item.sent ? styles.sentText : styles.receivedText,
+            ]}
+          >
+            {item.text}
+          </Text>
+          <Text
+            style={[
+              styles.messageTime,
+              item.sent ? styles.sentTime : styles.receivedTime,
+            ]}
+          >
+            {item.time}
+          </Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <>
@@ -217,13 +249,17 @@ const Chat = () => {
             </TouchableOpacity>
 
             <Image
-              source={{ uri: typeof avatar === "string" ? avatar : undefined }}
+              source={
+                avatar && typeof avatar === "string" && avatar.trim() !== ""
+                  ? { uri: avatar }
+                  : require("@/assets/images/technician_sample.jpg")
+              }
               style={styles.avatar}
             />
 
             <View style={styles.headerInfo}>
               <Text style={styles.headerName}>
-                {typeof name === "string" ? name : "Technician"}
+                {name && typeof name === "string" ? name : "Milan Mistri"}
               </Text>
               <Text style={styles.headerStatus}>Online</Text>
             </View>

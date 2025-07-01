@@ -1,6 +1,6 @@
 import BackButton from "@/components/BackButton";
+
 import { colors, fonts } from "@/constants/theme";
-import axios from "axios";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ChatCircle,
@@ -20,35 +20,47 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-const API_URL = "http://localhost:5000/api/bookings";
+import {
+  getTechnicianByBookingId,
+  Technician,
+} from "../mockdata/technicianData";
 
 const TechnicianFoundScreen = () => {
   const { type, subProblem, bookingId } = useLocalSearchParams();
   const router = useRouter();
-  const [technician, setTechnician] = React.useState<any>(null);
+  const [technician, setTechnician] = React.useState<Technician | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
 
   React.useEffect(() => {
-    if (bookingId) {
-      setLoading(true);
-      setError("");
-      Promise.resolve(axios.get(`${API_URL}/${bookingId}`))
-        .then((res) => setTechnician((res as any).data.technician))
-        .catch(() => setError("Failed to load technician details."))
-        .finally(() => setLoading(false));
-    }
+    setLoading(true);
+    setError("");
+    // Simulate API call delay
+    setTimeout(() => {
+      try {
+        // Use bookingId if available, otherwise use a default ID
+        const id = (bookingId as string) || "default_booking";
+        const techData = getTechnicianByBookingId(id);
+        setTechnician(techData);
+      } catch (err) {
+        setError("Failed to load technician details.");
+      } finally {
+        setLoading(false);
+      }
+    }, 1000);
   }, [bookingId]);
 
   const handleStartChat = () => {
+    if (!technician) return;
+
     router.push({
       pathname: "/(chat)/[id]",
       params: {
         bookingId: typeof bookingId === "string" ? bookingId : "",
-        name: "Technician",
-        avatar: "",
-      }, // Pass more info as needed
+        name: technician.fullName,
+        avatar: technician.avatar || "",
+        technicianId: technician.id,
+      },
     });
   };
 
@@ -86,24 +98,35 @@ const TechnicianFoundScreen = () => {
                 }
                 style={styles.avatar}
               />
-              <View style={styles.onlineIndicator} />
+              {technician?.isOnline && <View style={styles.onlineIndicator} />}
             </View>
 
             <Text style={styles.name}>
-              {technician?.fullName || "Technician"}
+              {technician?.fullName || "Milan Mistri"}
             </Text>
-            <Text style={styles.role}>{type} Specialist</Text>
+            <Text style={styles.role}>
+              {technician?.role || "Plumbing Specialist"}
+            </Text>
 
             <View style={styles.ratingRow}>
               {[...Array(5)].map((_, i) => (
-                <Star key={i} size={14} color="#fbbf24" weight="fill" />
+                <Star
+                  key={i}
+                  size={14}
+                  color={i < (technician?.rating || 0) ? "#fbbf24" : "#e5e7eb"}
+                  weight={i < (technician?.rating || 0) ? "fill" : "regular"}
+                />
               ))}
-              <Text style={styles.ratingText}>5.0 (42)</Text>
+              <Text style={styles.ratingText}>
+                {technician?.rating || 0}.0 ({technician?.reviewCount || 0})
+              </Text>
             </View>
 
             <View style={styles.locationRow}>
               <MapPin size={14} color="#6b7280" />
-              <Text style={styles.locationText}>2.1 km away</Text>
+              <Text style={styles.locationText}>
+                {technician?.distance || "2.1 km away"}
+              </Text>
             </View>
           </View>
         )}
@@ -115,7 +138,9 @@ const TechnicianFoundScreen = () => {
                 <Clock size={18} color="#6b7280" />
                 <View>
                   <Text style={styles.infoLabel}>Arrival Time</Text>
-                  <Text style={styles.infoValue}>10-15 minutes</Text>
+                  <Text style={styles.infoValue}>
+                    {technician?.arrivalTime || "10-15 minutes"}
+                  </Text>
                 </View>
               </View>
 
@@ -123,14 +148,20 @@ const TechnicianFoundScreen = () => {
                 <CurrencyCircleDollar size={18} color="#6b7280" />
                 <View>
                   <Text style={styles.infoLabel}>Service Charge</Text>
-                  <Text style={styles.infoValue}>$220</Text>
+                  <Text style={styles.infoValue}>
+                    {technician?.serviceCharge || "$220"}
+                  </Text>
                 </View>
               </View>
             </View>
 
             <TouchableOpacity
-              style={styles.chatButton}
+              style={[
+                styles.chatButton,
+                !technician && styles.chatButtonDisabled,
+              ]}
               onPress={handleStartChat}
+              disabled={!technician}
             >
               <ChatCircle size={24} color="#ffffff" weight="fill" />
               <Text style={styles.chatButtonText}>Start Chat</Text>
@@ -269,6 +300,10 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     gap: 8,
     marginBottom: 32,
+  },
+  chatButtonDisabled: {
+    backgroundColor: "#9ca3af",
+    opacity: 0.6,
   },
   chatButtonText: {
     fontSize: 16,
