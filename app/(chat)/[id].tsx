@@ -69,7 +69,6 @@ const Chat = () => {
     return () => keyboardDidShowListener?.remove();
   }, []);
 
-  // Fetch booking and previous messages
   useEffect(() => {
     const fetchHistory = async () => {
       if (!bookingId || !user || !token) return;
