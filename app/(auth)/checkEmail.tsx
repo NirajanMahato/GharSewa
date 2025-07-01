@@ -13,7 +13,6 @@ const CheckEmail = () => {
 
   const handleResend = () => {
     console.log("Resend reset email");
-    // Resend email logic
   };
 
   const handleBackToLogin = () => {
@@ -31,7 +30,6 @@ const CheckEmail = () => {
           <AntDesign name="arrowleft" size={20} color="black" />
           <Typo style={styles.backText}> Back to login</Typo>
         </TouchableOpacity>
-        {/* Check Icon */}
         <View style={styles.iconContainer}>
           <Ionicons
             name="checkmark-done-circle-outline"
@@ -40,17 +38,14 @@ const CheckEmail = () => {
           />
         </View>
 
-        {/* Title */}
         <Typo style={styles.title}>Check your email</Typo>
 
-        {/* Subtitle */}
         <Typo style={styles.subtitle}>
           We sent a link to{" "}
           <Typo style={styles.emailText}>nirajanmahato44@gmail.com</Typo> to
           help set up a new password if you have an account with us.
         </Typo>
 
-        {/* Resend Button */}
         <PrimaryButton
           title="Resend Email Address"
           onPress={handleResend}
