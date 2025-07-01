@@ -75,7 +75,6 @@ const Chat = () => {
       setLoading(true);
       setError("");
       try {
-        // Fetch booking to get the other user's ID
         const res = await axios.get(`${API_URL}/${bookingId}`);
         const booking = res.data as any;
         let otherId = "";
