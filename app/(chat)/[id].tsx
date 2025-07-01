@@ -116,7 +116,6 @@ const Chat = () => {
   useEffect(() => {
     if (!bookingId || !user) return;
     socket.emit("join_chat", { bookingId, userId: user.id });
-    // Listen for incoming messages
     socket.on("receive_chat_message", (msg) => {
       setMessages((prev) => [
         ...prev,
@@ -143,7 +142,6 @@ const Chat = () => {
 
     console.log("Sending message:", input.trim());
 
-    // Add message to local state immediately for testing
     const newMessage = {
       id: Date.now().toString(),
       text: input.trim(),
@@ -164,7 +162,6 @@ const Chat = () => {
       return updatedMessages;
     });
 
-    // Try to send via socket if available
     if (bookingId && user) {
       try {
         socket.emit("send_chat_message", {
@@ -224,7 +221,6 @@ const Chat = () => {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.keyboardView}
         >
-          {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity
               style={styles.backButton}
