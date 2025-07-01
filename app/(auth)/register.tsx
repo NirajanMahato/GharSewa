@@ -1,4 +1,3 @@
-// app/(auth)/register.tsx
 import BackButton from "@/components/BackButton";
 import InputField from "@/components/InputField";
 import PrimaryButton from "@/components/PrimaryButton";
@@ -98,7 +97,6 @@ const Register = () => {
 
   return (
     <ScreenWrapper>
-      {/* Header Section */}
       <View style={styles.header}>
         <BackButton />
         <Image
@@ -118,10 +116,8 @@ const Register = () => {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.container}>
-            {/* Title */}
             <Typo style={styles.title}>Complete your info</Typo>
 
-            {/* Input Fields */}
             <InputField
               label="Full Name"
               placeholder="Enter your full name"

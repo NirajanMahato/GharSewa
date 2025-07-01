@@ -26,7 +26,6 @@ const ForgotPassword = () => {
   };
   return (
     <ScreenWrapper>
-      {/* Header Section */}
       <View style={styles.header}>
         <BackButton />
         <Image

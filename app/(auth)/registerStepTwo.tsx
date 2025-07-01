@@ -1,4 +1,3 @@
-// app/(auth)/registerStepTwo.tsx
 import BackButton from "@/components/BackButton";
 import PrimaryButton from "@/components/PrimaryButton";
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -36,7 +35,7 @@ const RegisterStepTwo = () => {
         longitude,
       });
 
-      router.replace("/(auth)/login"); // Navigate to home/tabs after saving
+      router.replace("/(auth)/login");
     } catch (error) {
       console.error("Location error:", error);
       alert("Failed to get location.");
@@ -118,7 +117,7 @@ const styles = StyleSheet.create({
   },
   logoIcon: {
     alignSelf: "center",
-    fontSize: 40, // Bigger
+    fontSize: 40,
   },
   container: {
     flex: 1,
