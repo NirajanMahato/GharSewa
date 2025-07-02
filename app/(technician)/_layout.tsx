@@ -16,7 +16,7 @@ export default function TechnicianLayout() {
   }, [user]);
 
   if (!user || user.role !== "technician") {
-    return null; // Optionally, show a loading spinner here
+    return null;
   }
 
   return (

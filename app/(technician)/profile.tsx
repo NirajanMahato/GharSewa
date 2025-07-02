@@ -198,7 +198,6 @@ const AccountScreen = () => {
           )}
         </View>
 
-        {/* Menu Options */}
         <View style={styles.menuContainer}>
           {menuOptions.map((option) => (
             <TouchableOpacity
@@ -236,7 +235,6 @@ const AccountScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Spacer */}
         <View style={{ height: 80 }} />
       </ScrollView>
     </SafeAreaView>

@@ -27,7 +27,6 @@ const TechnicianDashboard = () => {
   const router = useRouter();
   const [requests, setRequests] = useState<any[]>([DUMMY_REQUEST]);
 
-  // Reset requests on mount (simulate fresh login)
   useEffect(() => {
     setRequests([DUMMY_REQUEST]);
   }, []);

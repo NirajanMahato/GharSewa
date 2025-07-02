@@ -66,7 +66,6 @@ const Income = () => {
                 NPR {total.toLocaleString()}
               </Text>
             </View>
-            {/* Monthly Overview */}
             <View style={styles.monthCard}>
               <Ionicons name="calendar" size={22} color={colors.primary} />
               <View style={{ marginLeft: 12 }}>
@@ -76,7 +75,6 @@ const Income = () => {
                 </Text>
               </View>
             </View>
-            {/* Recent Payouts */}
             <Text style={styles.sectionTitle}>Recent Payouts</Text>
             {payouts.map((item) => (
               <View key={item.id} style={styles.payoutItem}>
