@@ -22,7 +22,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import io from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:5000"; // Change to your backend URL if needed
+const SOCKET_URL = "http://localhost:5000";
 const API_URL = "http://localhost:5000/api/bookings";
 const MESSAGES_URL = "http://localhost:5000/api/messages";
 const socket = io(SOCKET_URL);
