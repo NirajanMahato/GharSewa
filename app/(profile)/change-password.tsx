@@ -25,7 +25,6 @@ const ChangePassword = () => {
 
   const handleChangePassword = () => {
     if (!isPasswordMatch) return;
-    // TODO: API integration here
     console.log("Password changed!");
   };
 

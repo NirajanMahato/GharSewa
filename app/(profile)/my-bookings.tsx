@@ -1,15 +1,8 @@
 // app/(profile)/my-bookings.tsx
 import BackButton from "@/components/BackButton";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import {
-  FlatList,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
+import { FlatList, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const dummyBookings = [
@@ -37,14 +30,19 @@ const dummyBookings = [
 ];
 
 const MyBookings = () => {
-  const navigation = useNavigation();
-
   const renderItem = ({ item }: { item: any }) => (
     <View style={styles.card}>
       <View style={styles.cardLeft}>
         <Text style={styles.service}>{item.service}</Text>
-        <Text style={styles.datetime}>{item.date} • {item.time}</Text>
-        <Text style={[styles.status, item.status === "Completed" ? styles.completed : styles.upcoming]}>
+        <Text style={styles.datetime}>
+          {item.date} • {item.time}
+        </Text>
+        <Text
+          style={[
+            styles.status,
+            item.status === "Completed" ? styles.completed : styles.upcoming,
+          ]}
+        >
           {item.status}
         </Text>
       </View>
@@ -53,10 +51,10 @@ const MyBookings = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <View style={styles.header}>
-      <BackButton/>
+        <BackButton />
 
         <Text style={styles.title}>My Bookings</Text>
         <View style={{ width: 24 }} />
@@ -127,10 +125,10 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   completed: {
-    color: "#059669", // green
+    color: "#059669",
   },
   upcoming: {
-    color: "#2563eb", // blue
+    color: "#2563eb",
   },
   separator: {
     height: 16,

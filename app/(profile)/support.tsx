@@ -31,7 +31,7 @@ const SupportScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -52,7 +52,6 @@ const SupportScreen = () => {
         >
           <View style={styles.welcomeSection}>
             <Text style={styles.welcomeTitle}>How can we help you?</Text>
-           
           </View>
 
           <View style={styles.formSection}>
@@ -94,11 +93,11 @@ const SupportScreen = () => {
               />
             </View>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[
-                styles.button, 
-                (!name || !email || !message) && styles.buttonDisabled
-              ]} 
+                styles.button,
+                (!name || !email || !message) && styles.buttonDisabled,
+              ]}
               onPress={handleSubmit}
               activeOpacity={0.8}
             >

@@ -1,13 +1,7 @@
-import BackButton from '@/components/BackButton';
-import { Feather, MaterialIcons } from '@expo/vector-icons';
-import React, { useEffect, useRef } from 'react';
-import {
-  Animated,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
+import BackButton from "@/components/BackButton";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
+import React, { useEffect, useRef } from "react";
+import { Animated, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView as SafeAreaViewRN } from "react-native-safe-area-context";
 
 const UnderConstructionScreen = () => {
@@ -17,7 +11,6 @@ const UnderConstructionScreen = () => {
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
 
   useEffect(() => {
-    // Entrance animation
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -47,14 +40,14 @@ const UnderConstructionScreen = () => {
 
   const spin = rotateAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
+    outputRange: ["0deg", "360deg"],
   });
 
   return (
-    <SafeAreaViewRN style={styles.container} edges={['top']}>
+    <SafeAreaViewRN style={styles.container} edges={["top"]}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <View style={styles.header}>
-          <BackButton />
+        <BackButton />
       </View>
 
       <View style={styles.backgroundPattern}>
@@ -63,25 +56,18 @@ const UnderConstructionScreen = () => {
         <View style={[styles.circle, styles.circle3]} />
       </View>
 
-      <Animated.View 
+      <Animated.View
         style={[
           styles.content,
           {
             opacity: fadeAnim,
-            transform: [
-              { translateY: slideAnim },
-              { scale: scaleAnim }
-            ],
+            transform: [{ translateY: slideAnim }, { scale: scaleAnim }],
           },
         ]}
       >
-        {/* Main Icon */}
         <View style={styles.iconContainer}>
           <Animated.View
-            style={[
-              styles.gearIcon,
-              { transform: [{ rotate: spin }] }
-            ]}
+            style={[styles.gearIcon, { transform: [{ rotate: spin }] }]}
           >
             <MaterialIcons name="settings" size={80} color="#64748b" />
           </Animated.View>
@@ -90,13 +76,11 @@ const UnderConstructionScreen = () => {
           </View>
         </View>
 
-        {/* Main Text */}
         <Text style={styles.title}>Page Under Construction</Text>
         <Text style={styles.subtitle}>
           We're working hard to bring you something amazing
         </Text>
 
-        {/* Feature List */}
         <View style={styles.featureList}>
           <View style={styles.featureItem}>
             <Feather name="check-circle" size={16} color="#10b981" />
@@ -112,7 +96,6 @@ const UnderConstructionScreen = () => {
           </View>
         </View>
 
-        {/* Contact Info */}
         <Text style={styles.contactText}>
           Have questions? We'd love to hear from you
         </Text>
@@ -124,7 +107,7 @@ const UnderConstructionScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
   },
   header: {
     flexDirection: "row",
@@ -135,14 +118,14 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   backgroundPattern: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
+    position: "absolute",
+    width: "100%",
+    height: "100%",
   },
   circle: {
-    position: 'absolute',
+    position: "absolute",
     borderRadius: 1000,
-    backgroundColor: 'rgba(148, 163, 184, 0.03)',
+    backgroundColor: "rgba(148, 163, 184, 0.03)",
   },
   circle1: {
     width: 300,
@@ -159,33 +142,33 @@ const styles = StyleSheet.create({
   circle3: {
     width: 150,
     height: 150,
-    top: '40%',
+    top: "40%",
     right: -75,
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 40,
   },
   iconContainer: {
-    position: 'relative',
+    position: "relative",
     marginBottom: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   gearIcon: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   hammerIcon: {
-    position: 'absolute',
+    position: "absolute",
     bottom: -5,
     right: -5,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 20,
     padding: 4,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -196,15 +179,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 25,
-    fontWeight: '700',
-    color: '#1e293b',
+    fontWeight: "700",
+    color: "#1e293b",
     marginBottom: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
-    color: '#64748b',
-    textAlign: 'center',
+    color: "#64748b",
+    textAlign: "center",
     lineHeight: 24,
     marginBottom: 40,
     maxWidth: 280,
@@ -213,22 +196,22 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 12,
   },
   featureText: {
     fontSize: 16,
-    color: '#475569',
+    color: "#475569",
     marginLeft: 12,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   contactText: {
     fontSize: 14,
-    color: '#94a3b8',
-    textAlign: 'center',
-    fontStyle: 'italic',
+    color: "#94a3b8",
+    textAlign: "center",
+    fontStyle: "italic",
   },
 });
 
-export default UnderConstructionScreen; 
+export default UnderConstructionScreen;
