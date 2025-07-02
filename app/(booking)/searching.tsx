@@ -45,7 +45,6 @@ const SearchingScreen = () => {
     animateDot(dot2, 200);
     animateDot(dot3, 400);
 
-    // Navigate after delay
     const timeout = setTimeout(() => {
       router.replace({
         pathname: "/(booking)/technician_found",

@@ -20,7 +20,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const CustomSearchScreen = () => {
-  const { type, subProblem, searchType } = useLocalSearchParams();
+  const { type, subProblem } = useLocalSearchParams();
   const router = useRouter();
 
   const [budgetMin, setBudgetMin] = useState("1000");
@@ -35,13 +35,10 @@ const CustomSearchScreen = () => {
     setLoading(true);
     setError("");
 
-    // Simulate API call delay
     setTimeout(() => {
       try {
-        // Generate a dummy booking ID
         const bookingId = `booking_${Date.now()}`;
 
-        // Redirect to technician found page with dummy data
         router.replace({
           pathname: "/(booking)/technician_found",
           params: {
@@ -57,7 +54,7 @@ const CustomSearchScreen = () => {
       } finally {
         setLoading(false);
       }
-    }, 2000); // 2 second delay to simulate searching
+    }, 2000);
   };
 
   const formatDate = (date: Date) => {

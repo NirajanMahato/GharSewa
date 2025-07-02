@@ -36,10 +36,8 @@ const TechnicianFoundScreen = () => {
   React.useEffect(() => {
     setLoading(true);
     setError("");
-    // Simulate API call delay
     setTimeout(() => {
       try {
-        // Use bookingId if available, otherwise use a default ID
         const id = (bookingId as string) || "default_booking";
         const techData = getTechnicianByBookingId(id);
         setTechnician(techData);
