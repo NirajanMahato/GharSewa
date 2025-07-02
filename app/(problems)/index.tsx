@@ -3,31 +3,37 @@ import { fonts } from "@/constants/theme";
 import { useRouter } from "expo-router";
 import { Lightning, Lock, Thermometer, Wrench } from "phosphor-react-native";
 import React from "react";
-import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const problems = [
   {
     label: "Plumbing",
     icon: Wrench,
-    color: "#3B82F6", // Blue-500
+    color: "#3B82F6",
     description: "Pipes, leaks & repairs",
   },
   {
     label: "Electrical",
     icon: Lightning,
-    color: "#3B82F6", // Blue-500
+    color: "#3B82F6",
     description: "Wiring & power issues",
   },
   {
     label: "Locksmith",
     icon: Lock,
-    color: "#3B82F6", // Blue-500
+    color: "#3B82F6",
     description: "Keys & security",
   },
   {
     label: "HVAC",
     icon: Thermometer,
-    color: "#3B82F6", // Blue-500
+    color: "#3B82F6",
     description: "Heating & cooling",
   },
 ];
@@ -46,13 +52,10 @@ const ProblemSelectionScreen = () => {
         <View style={styles.header}>
           <BackButton />
         </View>
-        
         <View style={styles.content}>
           <View style={styles.titleSection}>
             <Text style={styles.title}>What service do you need?</Text>
-            
           </View>
-
           <View style={styles.grid}>
             {problems.map((item, index) => {
               const Icon = item.icon;
@@ -63,7 +66,12 @@ const ProblemSelectionScreen = () => {
                   onPress={() => handleSelect(item.label)}
                   activeOpacity={0.8}
                 >
-                  <View style={[styles.iconContainer, { backgroundColor: item.color + "15" }]}>
+                  <View
+                    style={[
+                      styles.iconContainer,
+                      { backgroundColor: item.color + "15" },
+                    ]}
+                  >
                     <Icon color={item.color} size={32} weight="duotone" />
                   </View>
                   <Text style={styles.cardLabel}>{item.label}</Text>
@@ -72,8 +80,6 @@ const ProblemSelectionScreen = () => {
               );
             })}
           </View>
-
-          
         </View>
       </View>
     </>
@@ -104,7 +110,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 23,
     fontFamily: fonts.bold || "System",
-    color: "#1F2937", // Gray-800
+    color: "#1F2937",
     marginBottom: 8,
     textAlign: "center",
     letterSpacing: -0.5,
@@ -112,7 +118,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     fontFamily: fonts.regular || "System",
-    color: "#6B7280", // Gray-500
+    color: "#6B7280",
     textAlign: "center",
     lineHeight: 22,
   },
@@ -126,20 +132,18 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "47%",
-    backgroundColor: "#F8FAFC", // Light gray-blue
+    backgroundColor: "#F8FAFC",
     borderRadius: 24,
     paddingVertical: 25,
     paddingHorizontal: 15,
     alignItems: "center",
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#E2E8F0", // Gray-200
-    // Enhanced shadow for iOS
+    borderColor: "#E2E8F0",
     shadowColor: "#3B82F6",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.12,
     shadowRadius: 16,
-    // Enhanced shadow for Android
     elevation: 8,
   },
   iconContainer: {
@@ -150,14 +154,14 @@ const styles = StyleSheet.create({
   cardLabel: {
     fontSize: 18,
     fontFamily: fonts.semiBold || "System",
-    color: "#1F2937", // Gray-800
+    color: "#1F2937",
     marginBottom: 4,
     textAlign: "center",
   },
   cardDescription: {
     fontSize: 13,
     fontFamily: fonts.regular || "System",
-    color: "#6B7280", // Gray-500
+    color: "#6B7280",
     textAlign: "center",
     lineHeight: 18,
   },
