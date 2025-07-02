@@ -19,7 +19,7 @@ import {
 const Message = () => {
   const navigation = useNavigation();
   const router = useRouter();
-  const messages = customerMessages; // Will replace with real data later
+  const messages = customerMessages;
 
   const renderItem = ({ item }: { item: CustomerMessage }) => (
     <TouchableOpacity
@@ -101,14 +101,6 @@ const styles = StyleSheet.create({
     left: 0,
     top: 7,
     padding: 8,
-    // borderRadius: 16,
-    // backgroundColor: 'rgba(255,255,255,0.95)',
-    // elevation: 4,
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.15,
-    // shadowRadius: 4,
-    // zIndex: 10,
   },
   headerTitle: {
     fontSize: 20,

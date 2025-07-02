@@ -1,7 +1,13 @@
 import { colors, fonts } from "@/constants/theme";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface Suggestion {
   title: string;
@@ -16,26 +22,29 @@ interface Props {
 const LocationSuggestions: React.FC<Props> = ({ suggestions, onSelect }) => {
   return (
     <FlatList
-  data={suggestions}
-  keyExtractor={(item, idx) => item.title + idx}
-  renderItem={({ item }) => (
-    <TouchableOpacity
-      style={styles.suggestionItem}
-      onPress={() => onSelect?.(item)}
-    >
-      <Feather name="map-pin" size={20} color={colors.primary} style={{ marginRight: 12 }} />
-      <View style={{ flex: 1 }}>
-        <Text style={styles.suggestionTitle}>{item.title}</Text>
-        <Text style={styles.suggestionSubtitle}>{item.subtitle}</Text>
-      </View>
-    </TouchableOpacity>
-  )}
-  style={{ flex: 1 }}
-  contentContainerStyle={{ paddingBottom: 12 }}
-  showsVerticalScrollIndicator={false}
-/>
-
-
+      data={suggestions}
+      keyExtractor={(item, idx) => item.title + idx}
+      renderItem={({ item }) => (
+        <TouchableOpacity
+          style={styles.suggestionItem}
+          onPress={() => onSelect?.(item)}
+        >
+          <Feather
+            name="map-pin"
+            size={20}
+            color={colors.primary}
+            style={{ marginRight: 12 }}
+          />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.suggestionTitle}>{item.title}</Text>
+            <Text style={styles.suggestionSubtitle}>{item.subtitle}</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+      style={{ flex: 1 }}
+      contentContainerStyle={{ paddingBottom: 12 }}
+      showsVerticalScrollIndicator={false}
+    />
   );
 };
 
@@ -67,4 +76,4 @@ const styles = StyleSheet.create({
     color: colors.neutral600,
     fontFamily: fonts.regular,
   },
-}); 
+});
