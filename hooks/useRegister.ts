@@ -53,7 +53,7 @@ export const useRegister = () => {
 
       router.replace({
         pathname: "/registerStepTwo",
-        params: { userId }, // Pass it through router
+        params: { userId },
       });
 
       return true;

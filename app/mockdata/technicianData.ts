@@ -25,8 +25,6 @@ export const technicianData: Technician = {
 };
 
 export const getTechnicianByBookingId = (bookingId: string): Technician => {
-  // In a real app, this would fetch from API
-  // For now, return the static data
   return {
     ...technicianData,
     id: bookingId,

@@ -1,4 +1,3 @@
-// app/(profile)/my-bookings.tsx
 import BackButton from "@/components/BackButton";
 import { Feather } from "@expo/vector-icons";
 import React from "react";

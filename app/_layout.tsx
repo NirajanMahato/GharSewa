@@ -1,4 +1,3 @@
-// app/_layout.tsx
 import { AuthContext, AuthProvider } from "@/context/AuthContext";
 import { useFonts } from "expo-font";
 import { Stack, useRouter, useSegments } from "expo-router";
@@ -21,14 +20,10 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
     const inBookingGroup = segments[0] === "(booking)";
     const inProblemsGroup = segments[0] === "(problems)";
 
-    // If user is not authenticated and trying to access protected routes
     if (!user && !inAuthGroup && segments[0] !== "") {
-      // Redirect to login
       router.replace("/(auth)/login");
     }
-    // If user is authenticated and trying to access auth routes
     else if (user && inAuthGroup) {
-      // Redirect to appropriate dashboard based on role
       if (user.role === "technician") {
         router.replace("/(technician)");
       } else {

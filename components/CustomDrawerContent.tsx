@@ -1,5 +1,3 @@
-// app/components/CustomDrawerContent.tsx
-
 import { colors, fonts } from "@/constants/theme";
 import { AuthContext } from "@/context/AuthContext";
 import { Feather } from "@expo/vector-icons";

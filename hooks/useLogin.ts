@@ -1,4 +1,3 @@
-// hooks/useLogin.ts
 import { AuthContext } from "@/context/AuthContext";
 import axios from "axios";
 import { useContext, useState } from "react";

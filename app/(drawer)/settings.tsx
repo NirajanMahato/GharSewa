@@ -1,4 +1,3 @@
-// app/(profile)/settings.tsx
 import { colors } from "@/constants/theme";
 import { Feather, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
