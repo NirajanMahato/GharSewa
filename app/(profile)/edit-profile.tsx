@@ -1,9 +1,11 @@
 import BackButton from "@/components/BackButton";
 import InputField from "@/components/InputField";
 import { colors, fonts } from "@/constants/theme";
+import { useFetchUser } from "@/hooks/useFetchUser";
+import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -20,36 +22,64 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const EditProfileScreen = () => {
   const navigation = useNavigation();
+  const { user, loading: userLoading } = useFetchUser();
+  const { updateProfile, loading: updateLoading } = useUpdateProfile();
 
-  const [name, setName] = useState("John Doe");
-  const [email, setEmail] = useState("johndoe44@gmail.com");
-  const [phone, setPhone] = useState("+977 9800000000");
-  const [address, setAddress] = useState("Kathmandu, Nepal");
-  const [profileImage, setProfileImage] = useState("https://via.placeholder.com/120");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [profileImage, setProfileImage] = useState(
+    "https://via.placeholder.com/120"
+  );
 
-  const handleSave = () => {
+  useEffect(() => {
+    if (user) {
+      setName(user.fullName || "");
+      setEmail(user.email || "");
+      setPhone(user.phone || "");
+      setAddress(user.address || "");
+      if (user.profilePicture) {
+        setProfileImage(user.profilePicture);
+      }
+    }
+  }, [user]);
+
+  const handleSave = async () => {
     if (!name.trim() || !email.trim() || !phone.trim()) {
       Alert.alert("Error", "Please fill in all required fields.");
       return;
     }
-    Alert.alert("Success", "Profile updated successfully!");
-    navigation.goBack();
+
+    try {
+      await updateProfile({
+        fullName: name,
+        email,
+        phone,
+        address,
+      });
+
+      Alert.alert("Success", "Profile updated successfully!", [
+        {
+          text: "OK",
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+    }
   };
 
   const handleImagePicker = () => {
-    Alert.alert(
-      "Change Profile Picture",
-      "Choose an option",
-      [
-        { text: "Camera", onPress: () => console.log("Camera pressed") },
-        { text: "Gallery", onPress: () => console.log("Gallery pressed") },
-        { text: "Cancel", style: "cancel" },
-      ]
-    );
+    Alert.alert("Change Profile Picture", "Choose an option", [
+      { text: "Camera", onPress: () => console.log("Camera pressed") },
+      { text: "Gallery", onPress: () => console.log("Gallery pressed") },
+      { text: "Cancel", style: "cancel" },
+    ]);
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
       <View style={styles.header}>
@@ -64,70 +94,94 @@ const EditProfileScreen = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
       >
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.profileSection}>
-            <View style={styles.profileImageContainer}>
-              <Image source={{ uri: profileImage }} style={styles.profileImage} />
-              <TouchableOpacity
-                style={styles.editImageButton}
-                onPress={handleImagePicker}
-                activeOpacity={0.8}
-              >
-                <MaterialIcons name="camera-alt" size={18} color="#ffffff" />
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.profileImageText}>Tap to change photo</Text>
+        {userLoading ? (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Loading profile...</Text>
           </View>
-
-          <InputField
-            label="Full Name *"
-            value={name}
-            onChangeText={setName}
-            placeholder="Enter your full name"
-            autoCapitalize="words"
-          />
-
-          <InputField
-            label="Email Address *"
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Enter your email"
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-
-          <InputField
-            label="Phone Number *"
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="Enter your phone number"
-            keyboardType="phone-pad"
-          />
-
-          <InputField
-            label="Address"
-            value={address}
-            onChangeText={setAddress}
-            placeholder="Enter your address"
-            autoCapitalize="words"
-          />
-
-          <TouchableOpacity
-            style={styles.saveButton}
-            onPress={handleSave}
-            activeOpacity={0.8}
+        ) : (
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            <Text style={styles.saveButtonText}>Save Changes</Text>
-            <Feather name="check" size={18} color="#ffffff" style={styles.saveButtonIcon} />
-          </TouchableOpacity>
+            <View style={styles.profileSection}>
+              <View style={styles.profileImageContainer}>
+                <Image
+                  source={{ uri: profileImage }}
+                  style={styles.profileImage}
+                />
+                <TouchableOpacity
+                  style={styles.editImageButton}
+                  onPress={handleImagePicker}
+                  activeOpacity={0.8}
+                >
+                  <MaterialIcons name="camera-alt" size={18} color="#ffffff" />
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.profileImageText}>Tap to change photo</Text>
+            </View>
 
-          <View style={styles.bottomSpacing} />
-        </ScrollView>
+            <InputField
+              label="Full Name *"
+              value={name}
+              onChangeText={setName}
+              placeholder="Enter your full name"
+              autoCapitalize="words"
+            />
+
+            <InputField
+              label="Email Address *"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Enter your email"
+              autoCapitalize="none"
+              keyboardType="email-address"
+            />
+
+            <InputField
+              label="Phone Number *"
+              value={phone}
+              onChangeText={setPhone}
+              placeholder="Enter your phone number"
+              keyboardType="phone-pad"
+            />
+
+            <InputField
+              label="Address"
+              value={address}
+              onChangeText={setAddress}
+              placeholder="Enter your address"
+              autoCapitalize="words"
+            />
+
+            <TouchableOpacity
+              style={[
+                styles.saveButton,
+                updateLoading && styles.saveButtonDisabled,
+              ]}
+              onPress={handleSave}
+              activeOpacity={0.8}
+              disabled={updateLoading}
+            >
+              {updateLoading ? (
+                <Text style={styles.saveButtonText}>Saving...</Text>
+              ) : (
+                <>
+                  <Text style={styles.saveButtonText}>Save Changes</Text>
+                  <Feather
+                    name="check"
+                    size={18}
+                    color="#ffffff"
+                    style={styles.saveButtonIcon}
+                  />
+                </>
+              )}
+            </TouchableOpacity>
+
+            <View style={styles.bottomSpacing} />
+          </ScrollView>
+        )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -231,10 +285,24 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 4,
   },
+  saveButtonDisabled: {
+    backgroundColor: colors.neutral300,
+    opacity: 0.7,
+  },
   saveButtonText: {
     color: "#ffffff",
     fontSize: 16,
     fontFamily: fonts.bold,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#6b7280",
+    fontFamily: fonts.regular,
   },
   saveButtonIcon: {
     marginLeft: 8,

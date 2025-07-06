@@ -81,10 +81,8 @@ const Home = () => {
         <View style={styles.headerInfo}>
           <Text style={styles.technicianName}>{item.fullName}</Text>
           <View style={styles.ratingContainer}>
-            <Feather name="star" size={14} color="#FFD700" />
-            <Text style={styles.ratingText}>{item.rating || 4.5}</Text>
             <Text style={styles.jobsText}>
-              ({item.completedJobs || 25} jobs)
+              {item.completedJobs || 0} jobs completed
             </Text>
           </View>
         </View>

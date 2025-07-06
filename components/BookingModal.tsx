@@ -64,7 +64,6 @@ const BookingModal = ({ visible, onClose, technician }: BookingModalProps) => {
       return;
     }
 
-    // Check if selected date is today or in the past
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const selectedDateOnly = new Date(selectedDate);

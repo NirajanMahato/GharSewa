@@ -1,4 +1,3 @@
-// app/(auth)/login.tsx
 import InputField from "@/components/InputField";
 import PrimaryButton from "@/components/PrimaryButton";
 import ScreenWrapper from "@/components/ScreenWrapper";

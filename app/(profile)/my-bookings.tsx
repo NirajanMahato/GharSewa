@@ -1,29 +1,64 @@
 import BackButton from "@/components/BackButton";
+import { useUserBookings } from "@/hooks/useUserBookings";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
-import { FlatList, StatusBar, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const dummyBookings = [
-
-];
-
 const MyBookings = () => {
+  const { bookings, loading, error, refetch } = useUserBookings();
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const formatTime = (timeString: string) => {
+    return timeString;
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "completed":
+        return styles.completed;
+      case "accepted":
+        return styles.upcoming;
+      case "pending":
+        return styles.pending;
+      case "rejected":
+        return styles.rejected;
+      default:
+        return styles.upcoming;
+    }
+  };
+
   const renderItem = ({ item }: { item: any }) => (
     <View style={styles.card}>
       <View style={styles.cardLeft}>
-        <Text style={styles.service}>{item.service}</Text>
+        <Text style={styles.service}>{item.serviceType}</Text>
         <Text style={styles.datetime}>
-          {item.date} • {item.time}
+          {formatDate(item.scheduledDate)} • {formatTime(item.scheduledTime)}
         </Text>
-        <Text
-          style={[
-            styles.status,
-            item.status === "Completed" ? styles.completed : styles.upcoming,
-          ]}
-        >
-          {item.status}
+        <Text style={[styles.status, getStatusColor(item.status)]}>
+          {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
         </Text>
+        {item.technician && (
+          <Text style={styles.technician}>
+            Technician: {item.technician.fullName}
+          </Text>
+        )}
+        <Text style={styles.address}>Address: {item.address}</Text>
       </View>
       <Feather name="chevron-right" size={20} color="#9ca3af" />
     </View>
@@ -39,13 +74,33 @@ const MyBookings = () => {
         <View style={{ width: 24 }} />
       </View>
 
-      <FlatList
-        data={dummyBookings}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContent}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-      />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#2563eb" />
+          <Text style={styles.loadingText}>Loading bookings...</Text>
+        </View>
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={bookings}
+          keyExtractor={(item) => item._id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContent}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Feather name="calendar" size={48} color="#9ca3af" />
+              <Text style={styles.emptyText}>No bookings found</Text>
+              <Text style={styles.emptySubtext}>
+                Your booking history will appear here
+              </Text>
+            </View>
+          }
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -109,7 +164,65 @@ const styles = StyleSheet.create({
   upcoming: {
     color: "#2563eb",
   },
+  pending: {
+    color: "#f59e0b",
+  },
+  rejected: {
+    color: "#dc2626",
+  },
+  technician: {
+    fontSize: 12,
+    color: "#6b7280",
+    marginTop: 4,
+  },
+  address: {
+    fontSize: 12,
+    color: "#6b7280",
+    marginTop: 2,
+  },
   separator: {
     height: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 100,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: "#6b7280",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 100,
+    paddingHorizontal: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: "#dc2626",
+    textAlign: "center",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 100,
+    paddingHorizontal: 20,
+  },
+  emptyText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#6b7280",
+    marginTop: 16,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: "#9ca3af",
+    marginTop: 8,
+    textAlign: "center",
   },
 });

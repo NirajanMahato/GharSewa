@@ -1,21 +1,33 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, StatusBar } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { colors, fonts } from "@/constants/theme";
 import BackButton from "@/components/BackButton";
 import InputField from "@/components/InputField";
-import ValidationError from "@/components/ValidationError";
 import PrimaryButton from "@/components/PrimaryButton";
+import ValidationError from "@/components/ValidationError";
+import { colors, fonts } from "@/constants/theme";
+import { useChangePassword } from "@/hooks/useChangePassword";
+import { Feather } from "@expo/vector-icons";
+import React, { useState } from "react";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ChangePassword = () => {
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [touched, setTouched] = useState({ confirmPassword: false });
+
+  const { changePassword, loading } = useChangePassword();
 
   const isPasswordMatch = newPassword === confirmPassword;
 
@@ -23,9 +35,25 @@ const ChangePassword = () => {
     setTouched({ ...touched, [field]: true });
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (!isPasswordMatch) return;
-    console.log("Password changed!");
+
+    try {
+      await changePassword({ currentPassword, newPassword });
+      Alert.alert("Success", "Password changed successfully!", [
+        {
+          text: "OK",
+          onPress: () => {
+            setCurrentPassword("");
+            setNewPassword("");
+            setConfirmPassword("");
+            setTouched({ confirmPassword: false });
+          },
+        },
+      ]);
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+    }
   };
 
   return (
@@ -109,6 +137,7 @@ const ChangePassword = () => {
             title="Save Changes"
             style={[styles.button, !isPasswordMatch && styles.buttonDisabled]}
             onPress={handleChangePassword}
+            loading={loading}
           />
         </ScrollView>
       </KeyboardAvoidingView>
@@ -154,7 +183,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     paddingVertical: 14,
     borderRadius: 30,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 30,
   },
   buttonDisabled: {

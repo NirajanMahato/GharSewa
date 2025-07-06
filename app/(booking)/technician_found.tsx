@@ -7,7 +7,6 @@ import {
   Clock,
   CurrencyCircleDollar,
   MapPin,
-  Star,
 } from "phosphor-react-native";
 import React from "react";
 import {
@@ -40,13 +39,14 @@ const TechnicianFoundScreen = () => {
     setError("");
     setTimeout(() => {
       try {
-        // Create technician object from params
         const techData = {
           id: technicianId,
           fullName: technicianName,
-          skills: skills ? skills.split(",") : [],
-          rating: 4.5,
-          reviewCount: 25,
+          skills: skills
+            ? Array.isArray(skills)
+              ? skills
+              : skills.split(",")
+            : [],
           distance: "2.1 km away",
           arrivalTime: "10-15 minutes",
           serviceCharge: budget || "Rs 220",
@@ -118,20 +118,6 @@ const TechnicianFoundScreen = () => {
             <Text style={styles.role}>
               {technician?.role || "Plumbing Specialist"}
             </Text>
-
-            <View style={styles.ratingRow}>
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  size={14}
-                  color={i < (technician?.rating || 0) ? "#fbbf24" : "#e5e7eb"}
-                  weight={i < (technician?.rating || 0) ? "fill" : "regular"}
-                />
-              ))}
-              <Text style={styles.ratingText}>
-                {technician?.rating || 0}.0 ({technician?.reviewCount || 0})
-              </Text>
-            </View>
 
             <View style={styles.locationRow}>
               <MapPin size={14} color="#6b7280" />

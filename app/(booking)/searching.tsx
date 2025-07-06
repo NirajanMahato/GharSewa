@@ -1,4 +1,3 @@
-// app/(booking)/searching.tsx
 import Typo from "@/components/Typo";
 import { fonts } from "@/constants/theme";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -7,7 +6,7 @@ import React, { useEffect, useRef } from "react";
 import { Animated, StatusBar, StyleSheet, Text, View } from "react-native";
 import io from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:5000"; // Change to your backend URL if needed
+const SOCKET_URL = "http://localhost:5000";
 const socket = io(SOCKET_URL);
 
 const SearchingScreen = () => {
@@ -61,7 +60,6 @@ const SearchingScreen = () => {
             params: { type, subProblem, bookingId },
           });
         } else if (status === "rejected") {
-          // Show failure UI or navigate to a failure screen
           router.replace({
             pathname: "/(booking)/technician_found",
             params: { type, subProblem, bookingId, failed: "1" },
