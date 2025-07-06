@@ -20,7 +20,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const CustomSearchScreen = () => {
-  const { type, subProblem } = useLocalSearchParams();
+  const { technicianId, technicianName, skills } = useLocalSearchParams();
   const router = useRouter();
 
   const [budgetMin, setBudgetMin] = useState("1000");
@@ -42,8 +42,9 @@ const CustomSearchScreen = () => {
         router.replace({
           pathname: "/(booking)/technician_found",
           params: {
-            type,
-            subProblem,
+            technicianId,
+            technicianName,
+            skills,
             bookingId,
             budget: budgetMax,
             description: description || "No description provided",
@@ -91,7 +92,7 @@ const CustomSearchScreen = () => {
           <View style={styles.wrapper}>
             <View style={styles.header}>
               <BackButton />
-              <Text style={styles.headerTitle}>Customize Search</Text>
+              <Text style={styles.headerTitle}>Book Technician</Text>
               <View style={{ width: 24 }} />
             </View>
 
@@ -115,11 +116,11 @@ const CustomSearchScreen = () => {
             >
               <View style={styles.serviceCard}>
                 <View style={styles.serviceIconContainer}>
-                  <Feather name="tool" size={20} color="#3b82f6" />
+                  <Feather name="user" size={20} color="#3b82f6" />
                 </View>
                 <View style={styles.serviceInfo}>
-                  <Text style={styles.serviceType}>{type}</Text>
-                  <Text style={styles.serviceProblem}>{subProblem}</Text>
+                  <Text style={styles.serviceType}>{technicianName}</Text>
+                  <Text style={styles.serviceProblem}>Technician</Text>
                 </View>
               </View>
 

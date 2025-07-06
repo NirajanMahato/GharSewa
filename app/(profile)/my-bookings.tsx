@@ -5,27 +5,7 @@ import { FlatList, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const dummyBookings = [
-  {
-    id: "1",
-    service: "Plumbing",
-    date: "June 15, 2025",
-    time: "10:00 AM",
-    status: "Completed",
-  },
-  {
-    id: "2",
-    service: "Electrical",
-    date: "June 18, 2025",
-    time: "3:00 PM",
-    status: "Upcoming",
-  },
-  {
-    id: "3",
-    service: "Locksmith",
-    date: "June 20, 2025",
-    time: "1:00 PM",
-    status: "Upcoming",
-  },
+
 ];
 
 const MyBookings = () => {

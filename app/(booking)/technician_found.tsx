@@ -20,16 +20,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import {
-  getTechnicianByBookingId,
-  Technician,
-} from "../mockdata/technicianData";
 
 const TechnicianFoundScreen = () => {
-  const { type, subProblem, bookingId, budget, description } =
-    useLocalSearchParams();
+  const {
+    technicianId,
+    technicianName,
+    skills,
+    bookingId,
+    budget,
+    description,
+  } = useLocalSearchParams();
   const router = useRouter();
-  const [technician, setTechnician] = React.useState<Technician | null>(null);
+  const [technician, setTechnician] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
 
@@ -38,8 +40,18 @@ const TechnicianFoundScreen = () => {
     setError("");
     setTimeout(() => {
       try {
-        const id = (bookingId as string) || "default_booking";
-        const techData = getTechnicianByBookingId(id);
+        // Create technician object from params
+        const techData = {
+          id: technicianId,
+          fullName: technicianName,
+          skills: skills ? skills.split(",") : [],
+          rating: 4.5,
+          reviewCount: 25,
+          distance: "2.1 km away",
+          arrivalTime: "10-15 minutes",
+          serviceCharge: budget || "Rs 220",
+          isOnline: true,
+        };
         setTechnician(techData);
       } catch (err) {
         setError("Failed to load technician details.");
@@ -47,7 +59,7 @@ const TechnicianFoundScreen = () => {
         setLoading(false);
       }
     }, 1000);
-  }, [bookingId]);
+  }, [technicianId, technicianName, skills, budget]);
 
   const handleStartChat = () => {
     if (!technician) return;
