@@ -24,19 +24,19 @@ const options = [
     key: "addresses",
     label: "Saved Addresses",
     icon: <Ionicons name="location-sharp" size={18} color="#2563eb" />,
-    route: "/(profile)/UnderConstructionScreen" as const,
+    route: "/(profile)/saved-addresses" as const,
   },
   {
     key: "payments",
     label: "Payment Methods",
     icon: <Feather name="credit-card" size={18} color="#2563eb" />,
-    route: "/(profile)/UnderConstructionScreen" as const,
+    route: "/(profile)/payment-methods" as const,
   },
   {
     key: "notifications",
     label: "Notifications",
     icon: <Ionicons name="notifications" size={18} color="#2563eb" />,
-    route: "/(profile)/UnderConstructionScreen" as const,
+    route: "/(profile)/notifications" as const,
   },
   {
     key: "support",
@@ -213,12 +213,12 @@ const styles = StyleSheet.create({
   },
   email: {
     fontSize: 14,
-    color: "#6b7280",
+    color: colors.neutral500,
     marginBottom: 2,
   },
   number: {
     fontSize: 14,
-    color: "#6b7280",
+    color: colors.neutral500,
   },
   editBtn: {
     flexDirection: "row",

@@ -14,7 +14,7 @@ import {
 import {
   CustomerMessage,
   customerMessages,
-} from "../mockdata/customerMessages";
+} from "./customerMessages";
 
 const Message = () => {
   const navigation = useNavigation();
